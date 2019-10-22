@@ -1,14 +1,18 @@
 package com.bridgelabz.fundoo.model;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.Data;
+
 @Document(collection = "user")
+
+@Data
 public class User {
 
 	@Id
-	private long id;
+	private String id;
 
 	private String userName;
 
@@ -16,36 +20,7 @@ public class User {
 
 	private String emailId;
 
-	public String getUserName() {
-		return userName;
-	}
+	private Long mobileNo;
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getEmailId() {
-		return emailId;
-	}
-
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", userName=" + userName + ", password=" + password + ", emailId=" + emailId + "]";
-	}
+	private Boolean isActive;
 }
