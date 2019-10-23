@@ -14,5 +14,4 @@ public interface LabelService {
 	public String updateLabel(String token, String labelId, String labelName);
 
 	public String deleteLabel(String token, String labelId);
-
 }

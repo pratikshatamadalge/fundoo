@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoo.model.Response;
-//import com.bridgelabz.fundoo.note.dto.LabelDTO;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.exception.NoteServiceException;
 import com.bridgelabz.fundoo.note.model.Note;
@@ -34,7 +31,6 @@ public class NoteController {
 
 	@PostMapping("/createNote")
 	public Response createNote(@RequestBody NoteDTO noteDTO) {
-
 		String str = noteService.createNote(noteDTO);
 		return new Response(200, str, null);
 	}
@@ -52,7 +48,6 @@ public class NoteController {
 		try {
 			str = noteService.updateNote(id, noteDTO);
 		} catch (NoteServiceException e) {
-
 			e.printStackTrace();
 		}
 		return new Response(200, str, null);
@@ -91,7 +86,19 @@ public class NoteController {
 
 	@PutMapping("/addLabel")
 	public Response addLabel(@RequestParam String noteId, @RequestParam String labelId) {
-		noteService.addLabel(noteId,labelId);
-		return new Response(400, "label added to the note", null);
+		noteService.addLabel(noteId, labelId);
+		return new Response(200, "label added to the note", null);
+	}
+
+	@GetMapping("/sortByTitle")
+	public Response sortByTitle() {
+		List<Note> note = noteService.sortByTitle();
+		return new Response(200, "sorted by title name", note);
+	}
+
+	@GetMapping("/sortByDate")
+	public Response sortByDate() {
+		List<Note> note = noteService.sortByDate();
+		return new Response(200, "sorted by date", note);
 	}
 }

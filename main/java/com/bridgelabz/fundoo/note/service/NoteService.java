@@ -25,7 +25,7 @@ public interface NoteService {
 
 	public String addLabel(String noteId, String labelId);
 
-	public List<collabl> addCollable(String emailId, String noteId);
-	
-	
+	public List<Note> sortByTitle();
+
+	public List<Note> sortByDate();
 }

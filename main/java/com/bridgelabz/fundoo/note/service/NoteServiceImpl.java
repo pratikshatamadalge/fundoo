@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.exception.NoteServiceException;
+import com.bridgelabz.fundoo.note.model.Collab;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.model.collabl;
@@ -76,8 +77,9 @@ public class NoteServiceImpl implements NoteService {
 	public String deleteNote(String Id) throws NoteServiceException {
 		System.out.println("in deleteNote :" + Id);
 		Note note = noteRepository.findById(Id).get();
-		if (note == null) {
-			throw new NoteServiceException("note is not present");
+		List<Label> label = note.getLabels();
+		for (Label label1 : label) {
+			label1.getNote().remove(note);
 		}
 		noteRepository.deleteById(Id);
 		return environment.getProperty("delete");
@@ -102,7 +104,6 @@ public class NoteServiceImpl implements NoteService {
 			note.setIsArcheived(false);
 			note.setIsTrashed(false);
 		}
-
 		noteRepository.save(note);
 		return environment.getProperty("update");
 	}
@@ -158,8 +159,15 @@ public class NoteServiceImpl implements NoteService {
 		return environment.getProperty("update");
 	}
 
-	@Override
-	public List<collabl> addCollable(String emailId, String noteId) {
-		return null;
+	public List<Note> sortByTitle() {
+		List<Note> note = noteRepository.findAll();
+		note.sort((n1, n2) -> n1.getTitle().compareTo(n2.getTitle()));
+		return note;
+	}
+
+	public List<Note> sortByDate() {
+		List<Note> note = noteRepository.findAll();
+		note.sort((n1, n2) -> n1.getCreatedTime().compareTo(n2.getCreatedTime()));
+		return note;
 	}
 }

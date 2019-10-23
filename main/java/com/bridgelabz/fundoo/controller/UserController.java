@@ -46,7 +46,7 @@ public class UserController {
 	}
 
 	@GetMapping("/login")
-	public Response Login(@Valid @RequestBody UserDTO userDTO) {//throws LoginException {
+	public Response Login(@Valid @RequestBody UserDTO userDTO) {// throws LoginException {
 		System.out.println("Login data : " + userDTO);
 		String str = null;
 		try {

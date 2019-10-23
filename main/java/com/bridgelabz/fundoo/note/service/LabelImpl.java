@@ -42,7 +42,6 @@ public class LabelImpl implements LabelService {
 	@Override
 	public List<Label> getLabel(String token) {
 		String emailId = tokenUtil.decodeToken(token);
-
 		List<Label> label = labelRepository.findByEmailId(emailId);
 		return label;
 	}
@@ -53,6 +52,7 @@ public class LabelImpl implements LabelService {
 
 		Label label = labelRepository.findById(labelId).get();
 
+		label.setEmailId(emailId);
 		label.setLabelName(labelName);
 
 		labelRepository.save(label);
@@ -62,11 +62,8 @@ public class LabelImpl implements LabelService {
 	@Override
 	public String deleteLabel(String token, String labelId) {
 		// String emailId = tokenUtil.decodeToken(token);
-
 		labelRepository.deleteById(labelId);
-
 		return "deleted";
 	}
 
-	
 }

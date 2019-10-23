@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.LabelDTO;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.service.LabelService;
@@ -26,28 +27,28 @@ public class LabelController {
 	LabelService labelService;
 
 	@PostMapping("/createLabel")
-	public ResponseEntity<String> createLabel(@RequestParam String token, @RequestBody LabelDTO labelDTO) {
+	public Response createLabel(@RequestParam String token, @RequestBody LabelDTO labelDTO) {
 		System.out.println("inside the controller :" + labelDTO);
 		String str = labelService.createLabel(token, labelDTO);
-		return new ResponseEntity<String>(str, HttpStatus.OK);
+		return new Response(400, str, null);
 	}
 
 	@GetMapping("/getLabel")
-	public ResponseEntity<List> getLabel(@RequestHeader String token) {
+	public Response getLabel(@RequestHeader String token) {
 		List<Label> label = labelService.getLabel(token);
-		return new ResponseEntity<>(label, HttpStatus.OK);
+		return new Response(400, "fetched all the data", label);
 	}
 
 	@DeleteMapping("/deleteLabel")
-	public ResponseEntity<String> deleteLabel(@RequestHeader String token, @RequestParam String labelId) {
+	public Response deleteLabel(@RequestHeader String token, @RequestParam String labelId) {
 		String str = labelService.deleteLabel(token, labelId);
-		return new ResponseEntity<String>(str, HttpStatus.OK);
+		return new Response(400, str, null);
 	}
 
 	@PutMapping("/updateLabel")
-	public ResponseEntity<String> updateLabel(@RequestHeader String token, @RequestParam String labelId,
+	public Response updateLabel(@RequestHeader String token, @RequestParam String labelId,
 			@RequestParam String labelName) {
 		String str = labelService.updateLabel(token, labelId, labelName);
-		return new ResponseEntity<String>(str, HttpStatus.OK);
+		return new Response(400, str, null);
 	}
 }

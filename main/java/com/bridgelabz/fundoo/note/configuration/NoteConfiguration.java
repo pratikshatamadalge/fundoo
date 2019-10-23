@@ -14,8 +14,7 @@ public class NoteConfiguration {
 	}
 
 	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder()
-	{
+	public BCryptPasswordEncoder bCryptPasswordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 }

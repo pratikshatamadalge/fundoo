@@ -62,6 +62,5 @@ public class TokenUtil {
 		Claim claim = decodedjwt.getClaim("emailId");
 		emailId = claim.asString();
 		return emailId;
-
 	}
 }
