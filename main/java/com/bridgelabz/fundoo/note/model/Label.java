@@ -9,6 +9,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 
+/**
+ * @author Pratiksha Tamadalge
+ *
+ */
 @Data
 @Document(collection = "label")
 public class Label {

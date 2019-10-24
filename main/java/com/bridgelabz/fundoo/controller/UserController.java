@@ -6,7 +6,8 @@ import javax.security.auth.login.LoginException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,12 @@ import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.model.User;
 import com.bridgelabz.fundoo.service.IUserService;
 
+/**
+ * Purpose:User Controller
+ * 
+ * @author Pratiksha Tamadalge
+ *
+ */
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -30,66 +37,114 @@ public class UserController {
 	@Autowired
 	private IUserService userService;
 
+	/**
+	 * Purpose:Register the user
+	 * 
+	 * @param regDTO
+	 * @return Response( http status,error code,data )
+	 */
 	@PostMapping("/register")
-	public Response register(@Valid @RequestBody RegisterDTO regDTO) {
+	public ResponseEntity<Response> register(@Valid @RequestBody RegisterDTO regDTO) {
 		System.out.println("User DTO : " + regDTO);
-		String status = userService.register(regDTO);
+		Response status = userService.register(regDTO);
 
-		return new Response(200, status, null);
+		return new ResponseEntity<Response>(status, HttpStatus.OK);
 	}
 
+	/**
+	 * Purpose: Fetch all the users from the data base
+	 * 
+	 * @return Response( http status,error code,data )
+	 */
 	@GetMapping("/getdata")
-	public Response getDetails() {
+	public ResponseEntity<List> getDetails() {
 
 		List<User> user = userService.getUsers();
-		return new Response(200, "fetched all data successfully", user);
+		return new ResponseEntity<List>(user, HttpStatus.OK);
 	}
 
+	/**
+	 * Purpose: login user
+	 * 
+	 * @param userDTO
+	 * @return Response( http status,error code,data )
+	 */
 	@GetMapping("/login")
-	public Response Login(@Valid @RequestBody UserDTO userDTO) {// throws LoginException {
+	public ResponseEntity<Response> Login(@Valid @RequestBody UserDTO userDTO) {
 		System.out.println("Login data : " + userDTO);
-		String str = null;
+		Response str = null;
 		try {
 			str = userService.Login(userDTO);
 		} catch (LoginException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new Response(200, str, null);
+		return new ResponseEntity<Response>(str, HttpStatus.OK);
 	}
 
+	/**
+	 * Purpose:update any data of a particular user
+	 * 
+	 * @param oldEmail
+	 * @param newEmail
+	 * @return Response( http status,error code,data )
+	 */
 	@PutMapping("/update")
-	public Response updateUser(@RequestParam String oldEmail, @RequestParam String newEmail) {
+	public ResponseEntity<Response> updateUser(@RequestParam String oldEmail, @RequestParam String newEmail) {
 
-		userService.UpdateUser(oldEmail, newEmail);
-		return new Response(200, "updated", null);
+		Response status = userService.UpdateUser(oldEmail, newEmail);
+		return new ResponseEntity<Response>(status, HttpStatus.OK);
 	}
 
+	/**
+	 * Purpose:Delete particular user using unique id
+	 * 
+	 * @param emailId
+	 * @return Response( http status,error code,data )
+	 */
 	@DeleteMapping("/delete")
-	public Response DeleteUser(@RequestParam String emailId) {
+	public ResponseEntity<Response> DeleteUser(@RequestParam String emailId) {
 		System.out.println("User To be Deleted: " + emailId);
-		userService.deleteUser(emailId);
-		return new Response(200, "deleted", null);
+		Response status = userService.deleteUser(emailId);
+		return new ResponseEntity<Response>(status, HttpStatus.OK);
 	}
 
+	/**
+	 * Purpose:If user Forgot password then varification token is send to the user
+	 * 
+	 * @param emailId
+	 * @return Response( http status,error code,data )
+	 */
 	@GetMapping("/forgot")
-	public Response forgotPassword(@RequestParam String emailId) {
+	public ResponseEntity<Response> forgotPassword(@RequestParam String emailId) {
 		System.out.println("password is resetting of the user :" + emailId);
-		userService.sendEmail(emailId);
+		Response status = userService.sendEmail(emailId);
 
-		return new Response(200, "mail sent", null);
+		return new ResponseEntity<Response>(status, HttpStatus.OK);
 	}
 
+	/**
+	 * Purpose:Reset password with the help of jwt token
+	 * 
+	 * @param token
+	 * @param newPassword
+	 * @return Response( http status,error code,data )
+	 */
 	@PutMapping("/reset")
-	public Response resetPassword(@RequestHeader String token, @RequestHeader String newPassword) {
+	public ResponseEntity<Response> resetPassword(@RequestHeader String token, @RequestHeader String newPassword) {
 
-		userService.resetPassword(token, newPassword);
-		return new Response(200, "password reset successfull", null);
+		Response status = userService.resetPassword(token, newPassword);
+		return new ResponseEntity<Response>(status, HttpStatus.OK);
 	}
 
+	/**
+	 * Purpose: Validate the user by verifying the emailId using jwt token
+	 * 
+	 * @param token
+	 * @return Response( http status,error code,data )
+	 */
 	@GetMapping("/validate")
-	public Response validateUser(@RequestHeader String token) {
-		String status = userService.validateUser(token);
-		return new Response(200, status, null);
+	public ResponseEntity<Response> validateUser(@RequestHeader String token) {
+		Response status = userService.validateUser(token);
+		return new ResponseEntity<Response>(status,HttpStatus.OK);
 	}
 }

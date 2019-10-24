@@ -7,6 +7,13 @@ import org.springframework.stereotype.Repository;
 
 import com.bridgelabz.fundoo.model.User;
 
+/**
+ * Purpose: Repository to pass a query through mongorepository with mapping of
+ * User model
+ * 
+ * @author Pratiksha Tamadalge
+ *
+ */
 @Repository
 public interface IUserRepository extends MongoRepository<User, String> {
 

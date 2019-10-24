@@ -4,6 +4,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import lombok.Data;
 
+/**
+ * @author Pratiksha Tamadalge
+ *
+ */
 @Data
 @ResponseStatus
 public class Response {

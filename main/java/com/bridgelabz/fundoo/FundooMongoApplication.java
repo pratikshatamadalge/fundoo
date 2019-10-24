@@ -7,6 +7,10 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+/**
+ * @author Pratiksha Tamadalge
+ *
+ */
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @ComponentScan(basePackages = { "com.bridgelabz.fundoo", "com.bridgelabz.fundoo.note" })
 @EnableMongoRepositories({ "com.bridgelabz.fundoo.note.repository", "com.bridgelabz.fundoo.repository" })

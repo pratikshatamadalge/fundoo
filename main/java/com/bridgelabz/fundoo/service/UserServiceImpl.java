@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.service;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.security.auth.login.LoginException;
@@ -17,11 +18,18 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoo.dto.RegisterDTO;
 import com.bridgelabz.fundoo.dto.UserDTO;
 import com.bridgelabz.fundoo.exception.RegistrationException;
+import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.model.User;
 
 import com.bridgelabz.fundoo.repository.IUserRepository;
 import com.bridgelabz.fundoo.utility.TokenUtil;
 
+/**
+ * Purpose:User Service implementation to provide service to the user controller
+ * 
+ * @author Pratiksha Tamadalge
+ *
+ */
 @Service
 @PropertySource("classpath:message.properties")
 public class UserServiceImpl implements IUserService {
@@ -38,8 +46,14 @@ public class UserServiceImpl implements IUserService {
 	@Autowired
 	private Environment environment;
 
+	/**
+	 * Pupose:Register the user
+	 * 
+	 * @param regDTO
+	 * @return Environment variable as a string
+	 */
 	@Override
-	public String register(RegisterDTO regDTO) {
+	public Response register(RegisterDTO regDTO) {
 		System.out.println("in service User DTO : " + regDTO);
 
 		User user = new ModelMapper().map(regDTO, User.class);
@@ -55,11 +69,18 @@ public class UserServiceImpl implements IUserService {
 		message.setText("Varification token: " + token);
 		javaMailSender.send(message);
 		userRepository.save(user);
-		return environment.getProperty("registerSuccess");
+		return new Response(200, environment.getProperty("registerSuccess"), null);
 	}
 
+	/**
+	 * Purpose:Login the user
+	 * 
+	 * @param userDTO
+	 * @return Environment variable as a string
+	 * @throws LoginException
+	 */
 	@Override
-	public String Login(UserDTO userDTO) throws LoginException {
+	public Response Login(UserDTO userDTO) throws LoginException {
 
 		System.out.println("In userDTO service :" + userDTO);
 		User user = userRepository.findByEmailId(userDTO.getEmailId());
@@ -67,33 +88,56 @@ public class UserServiceImpl implements IUserService {
 			throw new LoginException("this emailId is not registered yet!!");
 		}
 		if (new BCryptPasswordEncoder().matches(userDTO.getPassword(), user.getPassword())) {
-			return environment.getProperty("loginSuccess");
+			return new Response(200, environment.getProperty("loginSuccess"), null);
 		}
-		return environment.getProperty("invalid");
+		return new Response(400, environment.getProperty("invalid"), null);
 	}
 
+	/**
+	 * Purpose:to fetch all the users
+	 * 
+	 * @return user list
+	 */
 	@Override
 	public List<User> getUsers() {
 		List<User> user = userRepository.findAll();
 		return user;
 	}
 
-	public void deleteUser(String emailId) {
+	/**
+	 * Purpose:To delete a particular user
+	 * 
+	 * @param emailId
+	 */
+	public Response deleteUser(String emailId) {
 		userRepository.deleteByEmailId(emailId);
+		return new Response(200, environment.getProperty("delete"), null);
 	}
 
+	/**
+	 * Purpose:To update a particular data of user
+	 * 
+	 * @param oldEmail
+	 * @param newEmail
+	 */
 	@Override
-	public void UpdateUser(String oldEmailId, String newEmailId) {
+	public Response UpdateUser(String oldEmailId, String newEmailId) {
 		User user = userRepository.findByEmailId(oldEmailId);
 		if (user == null) {
 			throw new RegistrationException("email is already is registered");
-
 		}
 		user.setEmailId(newEmailId);
+		user.setUpdatedDate(new Date());
 		userRepository.save(user);
+		return new Response(200, environment.getProperty("update"), null);
 	}
 
-	public void sendEmail(String emailId) {
+	/**
+	 * Purpose:To send a verification token to particular user
+	 * 
+	 * @param emailId
+	 */
+	public Response sendEmail(String emailId) {
 		System.out.println("in userserviceImpl :" + emailId);
 
 		User user = userRepository.findByEmailId(emailId);
@@ -109,17 +153,24 @@ public class UserServiceImpl implements IUserService {
 		message.setText("Varification token: " + token);
 
 		javaMailSender.send(message);
+
+		return new Response(200, environment.getProperty("sent"), null);
 	}
 
+	/**
+	 * Purpose:To reset the password of particular user
+	 * 
+	 * @param token
+	 * @param newPassword
+	 */
 	@Override
-	public void resetPassword(String token, String newPassword) {
+	public Response resetPassword(String token, String newPassword) {
 
 		System.out.println("token is: " + token);
 		String emailId = tokenUtil.decodeToken(token);
 		System.out.println("token is: " + emailId);
 
 		User user = userRepository.findByEmailId(emailId);
-
 		if (user == null) {
 			throw new RegistrationException("This emailId is not registerd");
 		}
@@ -127,18 +178,26 @@ public class UserServiceImpl implements IUserService {
 
 		user.setPassword(new BCryptPasswordEncoder().encode(newPassword));
 		userRepository.save(user);
+		return new Response(200, environment.getProperty("update"), null);
 	}
 
+	/**
+	 * Purpose:To validate the registered email id
+	 * 
+	 * @param token
+	 * @return String
+	 */
 	@Override
-	public String validateUser(String token) {
+	public Response validateUser(String token) {
 		String emailId = tokenUtil.decodeToken(token);
 		Boolean flag = userRepository.findAll().stream().anyMatch(i -> i.getEmailId().equals(emailId));
 		if (flag == true) {
 			User user = userRepository.findByEmailId(emailId);
 			user.setIsActive(true);
-			return "validate successfully";
+			user.setRegisteredDate(new Date());
+			userRepository.save(user);
+			return new Response(200, environment.getProperty("validate"), null);
 		}
-
 		throw new RegistrationException("register again");
 	}
 }

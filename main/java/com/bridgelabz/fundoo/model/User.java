@@ -1,13 +1,18 @@
 package com.bridgelabz.fundoo.model;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 
+/**
+ * @author Pratiksha Tamadalge
+ *
+ */
 @Document(collection = "user")
-
 @Data
 public class User {
 
@@ -21,6 +26,10 @@ public class User {
 	private String emailId;
 
 	private Long mobileNo;
+
+	private Date registeredDate;
+
+	private Date UpdatedDate;
 
 	private Boolean isActive;
 }

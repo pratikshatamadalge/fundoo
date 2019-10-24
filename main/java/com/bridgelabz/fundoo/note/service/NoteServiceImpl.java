@@ -5,20 +5,24 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.exception.NoteServiceException;
-import com.bridgelabz.fundoo.note.model.Collab;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
-import com.bridgelabz.fundoo.note.model.collabl;
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
 import com.bridgelabz.fundoo.note.repository.NoteRepository;
 import com.bridgelabz.fundoo.utility.TokenUtil;
 
+/**
+ * Purpose:To implement all the service for the note controller
+ * 
+ * @author Pratiksha Tamadalge
+ *
+ */
 @Service
 public class NoteServiceImpl implements NoteService {
 
@@ -37,62 +41,106 @@ public class NoteServiceImpl implements NoteService {
 	@Autowired
 	TokenUtil tokenUtil;
 
+	/**
+	 * Purpose:To create a Note
+	 * 
+	 * @param noteDTO
+	 * @return Environment variable as a string
+	 */
 	@Override
-	public String createNote(NoteDTO noteDTO) {
-		System.out.println("from controller :" + noteDTO);
+	public Response createNote(NoteDTO noteDTO, String token) {
+		String emailId = tokenUtil.decodeToken(token);
+
 		Note note = modelMapper.map(noteDTO, Note.class);
 		note.setCreatedTime(new Date());
 		note.setEditedTime(new Date());
-		note.setIsPinned(false);
-		note.setIsArcheived(false);
-		note.setIsTrashed(false);
+		note.setEmailId(emailId);
 		noteRepository.save(note);
-		return environment.getProperty("success");
+		return new Response(200, environment.getProperty("success"), null);
 	}
 
+	/**
+	 * Purpose: To update Note
+	 * 
+	 * @param id
+	 * @param noteDTO
+	 * @return Environment variable as a string
+	 * @throws NoteServiceException
+	 */
 	@Override
-	public String updateNote(String id, NoteDTO noteDTO) throws NoteServiceException {
-		Note note = noteRepository.findById(id).get();
-		if (note == null) {
+	public Response updateNote(String id, NoteDTO noteDTO, String token) throws NoteServiceException {
+		String emailId = tokenUtil.decodeToken(token);
+		Note note = noteRepository.findByEmailId(emailId);
+		Note note1 = noteRepository.findById(id).get();
+		if (note == null | note1 == null) {
 			throw new NoteServiceException("note is not present");
 		}
 		if (noteDTO.getTitle() != null && noteDTO.getDescription() != null) {
 			note.setTitle(noteDTO.getTitle());
 			note.setDescription(noteDTO.getDescription());
 			note.setEditedTime(new Date());
-			noteRepository.save(note);
 		} else if (noteDTO.getTitle() != null) {
 			note.setTitle(noteDTO.getTitle());
 			note.setEditedTime(new Date());
-			noteRepository.save(note);
 		} else if (noteDTO.getDescription() != null) {
 			note.setDescription(noteDTO.getDescription());
 			note.setEditedTime(new Date());
-			noteRepository.save(note);
 		}
-		return environment.getProperty("update");
+		noteRepository.save(note);
+		return new Response(200, environment.getProperty("update"), null);
 	}
 
+	/**
+	 * Purpose: To delete a note
+	 * 
+	 * @param id
+	 * @return Environment variable as a string
+	 * @throws NoteServiceException
+	 */
 	@Override
-	public String deleteNote(String Id) throws NoteServiceException {
-		System.out.println("in deleteNote :" + Id);
-		Note note = noteRepository.findById(Id).get();
-		List<Label> label = note.getLabels();
-		for (Label label1 : label) {
-			label1.getNote().remove(note);
+	public Response deleteNote(String id, String emailId) throws NoteServiceException {
+		// String emailId = tokenUtil.decodeToken(token);
+		String token = tokenUtil.createToken(emailId);
+		String email = tokenUtil.decodeToken(token);
+		Note noteUser = noteRepository.findByEmailId(email);
+		// Note note = noteRepository.findById(Id).get();
+		if (noteUser.getEmailId().contentEquals(emailId)) {
+			noteRepository.deleteById(id);
+			return new Response(200,environment.getProperty("delete"),null);
 		}
-		noteRepository.deleteById(Id);
-		return environment.getProperty("delete");
+		throw new NoteServiceException("note is not present");
+//		List<Label> label = note.getLabels();
+//		for (Label label1 : label) {
+//			label1.getNote().remove(note);
 	}
 
+	/**
+	 * Purpose:To fetch all the note
+	 * 
+	 * @return
+	 */
 	@Override
-	public List<Note> getAllNote() {
+	public List<Note> getAllNote(String token) {
+		String emailId = tokenUtil.decodeToken(token);
 		List<Note> note = noteRepository.findAll();
+
+		// List<Label> label = note.getLabels();
+		for (Note note1 : note) {
+			note1.getEmailId();
+		}
 		return note;
 	}
 
+	/**
+	 * Purpose:To pin and unpin the particular note
+	 * 
+	 * @param id
+	 * @return Environment variable as a string
+	 * @throws NoteServiceException
+	 */
 	@Override
-	public String isPinned(String id) throws NoteServiceException {
+	public Response isPinned(String id, String token) throws NoteServiceException {
+		String emailId = tokenUtil.decodeToken(token);
 		Note note = noteRepository.findById(id).get();
 		if (note == null) {
 			throw new NoteServiceException(environment.getProperty("invalid"));
@@ -101,29 +149,44 @@ public class NoteServiceImpl implements NoteService {
 			note.setIsPinned(false);
 		} else {
 			note.setIsPinned(true);
-			note.setIsArcheived(false);
-			note.setIsTrashed(false);
+			// note.setIsArcheived(false);
+			// note.setIsTrashed(false);
 		}
 		noteRepository.save(note);
-		return environment.getProperty("update");
+		return new Response(200, environment.getProperty("update"), null);
 	}
 
+	/**
+	 * Purpose: To move note to trash or restore
+	 * 
+	 * @param id
+	 * @return Environment variable as a string
+	 */
 	@Override
-	public String isTrashed(String id) {
+	public Response isTrashed(String id, String token) {
+		String emailId = tokenUtil.decodeToken(token);
 		Note note = noteRepository.findById(id).get();
 		if (note.getIsTrashed() == true) {
 			note.setIsTrashed(false);
 		} else {
 			note.setIsTrashed(true);
-			note.setIsArcheived(false);
-			note.setIsPinned(false);
+			// note.setIsArcheived(false);
+			// note.setIsPinned(false);
 		}
 		noteRepository.save(note);
-		return environment.getProperty("update");
+		return new Response(200, environment.getProperty("update"), null);
 	}
 
+	/**
+	 * Purpose: To Archive and Unarcheive a particular note
+	 * 
+	 * @param id
+	 * @return Environment variable as a string
+	 * @throws NoteServiceException
+	 */
 	@Override
-	public String isArcheived(String id) throws NoteServiceException {
+	public Response isArcheived(String id, String token) throws NoteServiceException {
+		String emailId = tokenUtil.decodeToken(token);
 		Note note = noteRepository.findById(id).get();
 		if (note == null) {
 			throw new NoteServiceException(environment.getProperty("invalid"));
@@ -132,40 +195,60 @@ public class NoteServiceImpl implements NoteService {
 			note.setIsArcheived(false);
 		} else {
 			note.setIsArcheived(true);
-			note.setIsPinned(false);
-			note.setIsTrashed(false);
+			// note.setIsPinned(false);
+			// note.setIsTrashed(false);
 		}
 		noteRepository.save(note);
-		return environment.getProperty("update");
+		return new Response(200, environment.getProperty("update"), null);
 	}
 
+	/**
+	 * Purpose:To add label to a particular note
+	 * 
+	 * @param noteId
+	 * @param labelId
+	 * @return Environment variable as a string
+	 */
 	@Override
-	public String addLabel(String noteId, String labelId) {
+	public Response addLabel(String noteId, String labelId, String token) {
+		String emailId = tokenUtil.decodeToken(token);
 		Note note = noteRepository.findById(noteId).get();
 
 		System.out.println("in service :" + note);
 		if (note == null) {
-			return environment.getProperty("notExist");
+			return new Response(400, environment.getProperty("notExist"), null);
 		}
 		Label label = labelRepository.findById(labelId).get();
 		if (label == null) {
-			return environment.getProperty("notExist");
+			return new Response(400, environment.getProperty("notExist"), null);
 		}
 		System.out.println("in service :" + label);
 		note.getLabels().add(label);
 		label.getNote().add(note);
 		labelRepository.save(label);
 		noteRepository.save(note);
-		return environment.getProperty("update");
+		return new Response(200, environment.getProperty("update"), null);
 	}
 
-	public List<Note> sortByTitle() {
+	/**
+	 * Purpose:Sort the note by title
+	 * 
+	 * @return Note list
+	 */
+	public List<Note> sortByTitle(String token) {
+		String emailId = tokenUtil.decodeToken(token);
 		List<Note> note = noteRepository.findAll();
 		note.sort((n1, n2) -> n1.getTitle().compareTo(n2.getTitle()));
 		return note;
 	}
 
-	public List<Note> sortByDate() {
+	/**
+	 * Purpose:Sort the note by date
+	 * 
+	 * @return Note list
+	 */
+	public List<Note> sortByDate(String token) {
+		String emailId = tokenUtil.decodeToken(token);
 		List<Note> note = noteRepository.findAll();
 		note.sort((n1, n2) -> n1.getCreatedTime().compareTo(n2.getCreatedTime()));
 		return note;

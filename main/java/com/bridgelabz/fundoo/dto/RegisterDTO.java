@@ -6,6 +6,13 @@ import org.hibernate.validator.constraints.Length;
 
 import lombok.Data;
 
+/**
+ * Purpose: For the registration Whichever data is required is mentioned in this
+ * DTO
+ * 
+ * @author Pratiksha Tamadalge
+ * 
+ */
 @Data
 public class RegisterDTO {
 	@NotNull(message = "userName is mandtory")

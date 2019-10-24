@@ -2,6 +2,10 @@ package com.bridgelabz.fundoo.exception;
 
 import lombok.Data;
 
+/**
+ * @author Pratisksha Tamadalge
+ *Purpose:To throw which exception error occured
+ */
 @Data
 public class ErrorResponse {
 

@@ -6,24 +6,31 @@ import javax.security.auth.login.LoginException;
 
 import com.bridgelabz.fundoo.dto.RegisterDTO;
 import com.bridgelabz.fundoo.dto.UserDTO;
+import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.model.User;
 
+/**
+ * Purpose:User service interface for user service implementation
+ * 
+ * @author Pratiksha Tamadalge
+ *
+ */
 public interface IUserService {
 
-	String register(RegisterDTO regDTO);
+	Response register(RegisterDTO regDTO);
 
-	String Login(UserDTO userDTO) throws LoginException;
+	Response Login(UserDTO userDTO) throws LoginException;
 
 	List<User> getUsers();
 
-	void deleteUser(String emailId);
+	Response deleteUser(String emailId);
 
-	void UpdateUser(String oldEmail, String newEmail);
+	Response UpdateUser(String oldEmail, String newEmail);
 
-	public void sendEmail(String emailId);
+	Response sendEmail(String emailId);
 
-	void resetPassword(String token, String newPassword);
+	Response resetPassword(String token, String newPassword);
 
-	String validateUser(String token);
+	Response validateUser(String token);
 
 }
