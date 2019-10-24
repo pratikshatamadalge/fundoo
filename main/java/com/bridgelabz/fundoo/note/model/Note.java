@@ -24,7 +24,7 @@ public class Note {
 	private Boolean isTrashed;
 	private Boolean isArcheived;
 	private String emailId;
-	private List<Collab> collab = new ArrayList<Collab>();
+	private List<String> collab = new ArrayList<String>();
 	@DBRef(lazy = true)
 	private List<Label> labels = new ArrayList<Label>();
 

@@ -70,9 +70,9 @@ public class NoteServiceImpl implements NoteService {
 	@Override
 	public Response updateNote(String id, NoteDTO noteDTO, String token) throws NoteServiceException {
 		String emailId = tokenUtil.decodeToken(token);
-		Note note = noteRepository.findByEmailId(emailId);
-		Note note1 = noteRepository.findById(id).get();
-		if (note == null | note1 == null) {
+	//	Note note = noteRepository.findByEmailId(emailId);
+		Note note = noteRepository.findById(id).get();
+		if ( note == null) {
 			throw new NoteServiceException("note is not present");
 		}
 		if (noteDTO.getTitle() != null && noteDTO.getDescription() != null) {
@@ -106,7 +106,7 @@ public class NoteServiceImpl implements NoteService {
 		// Note note = noteRepository.findById(Id).get();
 		if (noteUser.getEmailId().contentEquals(emailId)) {
 			noteRepository.deleteById(id);
-			return new Response(200,environment.getProperty("delete"),null);
+			return new Response(200, environment.getProperty("delete"), null);
 		}
 		throw new NoteServiceException("note is not present");
 //		List<Label> label = note.getLabels();
@@ -145,7 +145,7 @@ public class NoteServiceImpl implements NoteService {
 		if (note == null) {
 			throw new NoteServiceException(environment.getProperty("invalid"));
 		}
-		if (note.getIsPinned() == true) {
+		if (note.getIsPinned()) {
 			note.setIsPinned(false);
 		} else {
 			note.setIsPinned(true);
@@ -252,5 +252,26 @@ public class NoteServiceImpl implements NoteService {
 		List<Note> note = noteRepository.findAll();
 		note.sort((n1, n2) -> n1.getCreatedTime().compareTo(n2.getCreatedTime()));
 		return note;
+	}
+
+	@Override
+	public boolean addCollabarator(String noteId, String collabaratorEmail) {
+		Note note = noteRepository.findById(noteId).get();
+		if (note == null)
+			return false;
+		else {
+			note.getCollab().add(collabaratorEmail);
+			noteRepository.save(note);
+		}
+		return true;
+	}
+
+	@Override
+	public List<String> getAllCollabarators(String noteId) {
+		Note note = noteRepository.findById(noteId).get();
+		if (note != null)
+			return noteRepository.findById(noteId).get().getCollab();
+		else
+			return null;
 	}
 }

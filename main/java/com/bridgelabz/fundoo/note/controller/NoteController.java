@@ -176,4 +176,25 @@ public class NoteController {
 		List<Note> note = noteService.sortByDate(token);
 		return new ResponseEntity<List>(note, HttpStatus.OK);
 	}
+
+	@GetMapping("/getAllCollabaratorsOfNote")
+	public Response getAllCollabarators(@RequestParam String noteId) {
+		List<String> collabList = noteService.getAllCollabarators(noteId);
+		if (collabList == null)
+			return new Response(407, null, "Invalid noteId.....");
+		if (!collabList.isEmpty())
+			return new Response(200, "List of collabarators....", collabList);
+		else
+			return new Response(200, null, "No collabarartors found for given note...");
+
+	}
+
+	@PutMapping("/addCollabrator")
+	public Response addCollabaratorToNote(@RequestParam String noteId, @RequestParam String collabaratorEmail) {
+		if (noteService.addCollabarator(noteId, collabaratorEmail))
+			return new Response(200, null, "Collabarator added successfully....");
+
+		return new Response(404, null, "Invalid noteId");
+	}
+
 }
