@@ -38,5 +38,6 @@ public interface NoteService {
 
 	boolean addCollabarator(String noteId, String collabaratorEmail);
 
+	
 	List<String> getAllCollabarators(String noteId);
 }

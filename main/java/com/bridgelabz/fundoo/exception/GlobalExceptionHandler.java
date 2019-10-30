@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(RegistrationException.class)
 	public ResponseEntity<ErrorResponse> registrationException(Exception ex) {
 
-		return new ResponseEntity<>(new ErrorResponse(400, ex.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(new ErrorResponse(401, ex.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	/**

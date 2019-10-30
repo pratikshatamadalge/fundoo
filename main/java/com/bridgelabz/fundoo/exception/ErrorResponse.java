@@ -7,6 +7,7 @@ import lombok.Data;
  *Purpose:To throw which exception error occured
  */
 @Data
+
 public class ErrorResponse {
 
 	private int statusCode;

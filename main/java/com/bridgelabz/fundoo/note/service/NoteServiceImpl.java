@@ -68,11 +68,11 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response updateNote(String id, NoteDTO noteDTO, String token) throws NoteServiceException {
+	public Response updateNote(String noteId, NoteDTO noteDTO, String token) throws NoteServiceException {
 		String emailId = tokenUtil.decodeToken(token);
-	//	Note note = noteRepository.findByEmailId(emailId);
-		Note note = noteRepository.findById(id).get();
-		if ( note == null) {
+		// Note note = noteRepository.findByEmailId(emailId);
+		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
+		if (note == null) {
 			throw new NoteServiceException("note is not present");
 		}
 		if (noteDTO.getTitle() != null && noteDTO.getDescription() != null) {
@@ -98,14 +98,11 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response deleteNote(String id, String emailId) throws NoteServiceException {
-		// String emailId = tokenUtil.decodeToken(token);
-		String token = tokenUtil.createToken(emailId);
-		String email = tokenUtil.decodeToken(token);
-		Note noteUser = noteRepository.findByEmailId(email);
-		// Note note = noteRepository.findById(Id).get();
+	public Response deleteNote(String noteId, String token) throws NoteServiceException {
+		String emailId = tokenUtil.decodeToken(token);
+		Note noteUser = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (noteUser.getEmailId().contentEquals(emailId)) {
-			noteRepository.deleteById(id);
+			noteRepository.deleteById(noteId);
 			return new Response(200, environment.getProperty("delete"), null);
 		}
 		throw new NoteServiceException("note is not present");
@@ -126,7 +123,7 @@ public class NoteServiceImpl implements NoteService {
 
 		// List<Label> label = note.getLabels();
 		for (Note note1 : note) {
-			note1.getEmailId();
+			note1.getEmailId().matches(emailId);
 		}
 		return note;
 	}
@@ -134,14 +131,15 @@ public class NoteServiceImpl implements NoteService {
 	/**
 	 * Purpose:To pin and unpin the particular note
 	 * 
-	 * @param id
+	 * @param noteId
 	 * @return Environment variable as a string
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response isPinned(String id, String token) throws NoteServiceException {
+	public Response isPinned(String noteId, String token) throws NoteServiceException {
 		String emailId = tokenUtil.decodeToken(token);
-		Note note = noteRepository.findById(id).get();
+
+		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (note == null) {
 			throw new NoteServiceException(environment.getProperty("invalid"));
 		}
@@ -149,8 +147,6 @@ public class NoteServiceImpl implements NoteService {
 			note.setIsPinned(false);
 		} else {
 			note.setIsPinned(true);
-			// note.setIsArcheived(false);
-			// note.setIsTrashed(false);
 		}
 		noteRepository.save(note);
 		return new Response(200, environment.getProperty("update"), null);
@@ -163,15 +159,13 @@ public class NoteServiceImpl implements NoteService {
 	 * @return Environment variable as a string
 	 */
 	@Override
-	public Response isTrashed(String id, String token) {
+	public Response isTrashed(String noteId, String token) {
 		String emailId = tokenUtil.decodeToken(token);
-		Note note = noteRepository.findById(id).get();
+		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (note.getIsTrashed() == true) {
 			note.setIsTrashed(false);
 		} else {
 			note.setIsTrashed(true);
-			// note.setIsArcheived(false);
-			// note.setIsPinned(false);
 		}
 		noteRepository.save(note);
 		return new Response(200, environment.getProperty("update"), null);
@@ -185,9 +179,9 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response isArcheived(String id, String token) throws NoteServiceException {
+	public Response isArcheived(String noteId, String token) throws NoteServiceException {
 		String emailId = tokenUtil.decodeToken(token);
-		Note note = noteRepository.findById(id).get();
+		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (note == null) {
 			throw new NoteServiceException(environment.getProperty("invalid"));
 		}
@@ -195,8 +189,6 @@ public class NoteServiceImpl implements NoteService {
 			note.setIsArcheived(false);
 		} else {
 			note.setIsArcheived(true);
-			// note.setIsPinned(false);
-			// note.setIsTrashed(false);
 		}
 		noteRepository.save(note);
 		return new Response(200, environment.getProperty("update"), null);
@@ -212,7 +204,7 @@ public class NoteServiceImpl implements NoteService {
 	@Override
 	public Response addLabel(String noteId, String labelId, String token) {
 		String emailId = tokenUtil.decodeToken(token);
-		Note note = noteRepository.findById(noteId).get();
+		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 
 		System.out.println("in service :" + note);
 		if (note == null) {
@@ -237,7 +229,7 @@ public class NoteServiceImpl implements NoteService {
 	 */
 	public List<Note> sortByTitle(String token) {
 		String emailId = tokenUtil.decodeToken(token);
-		List<Note> note = noteRepository.findAll();
+		List<Note> note = noteRepository.findByEmailId(emailId);
 		note.sort((n1, n2) -> n1.getTitle().compareTo(n2.getTitle()));
 		return note;
 	}
@@ -249,11 +241,16 @@ public class NoteServiceImpl implements NoteService {
 	 */
 	public List<Note> sortByDate(String token) {
 		String emailId = tokenUtil.decodeToken(token);
-		List<Note> note = noteRepository.findAll();
+		List<Note> note = noteRepository.findByEmailId(emailId);
 		note.sort((n1, n2) -> n1.getCreatedTime().compareTo(n2.getCreatedTime()));
 		return note;
 	}
 
+	/**
+	 * @param noteId
+	 * @param collabaratorEmail
+	 * @return
+	 */
 	@Override
 	public boolean addCollabarator(String noteId, String collabaratorEmail) {
 		Note note = noteRepository.findById(noteId).get();
@@ -266,6 +263,10 @@ public class NoteServiceImpl implements NoteService {
 		return true;
 	}
 
+	/**
+	 * @param noteId
+	 * @return
+	 */
 	@Override
 	public List<String> getAllCollabarators(String noteId) {
 		Note note = noteRepository.findById(noteId).get();
