@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.note.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.bridgelabz.fundoo.model.Response;
@@ -38,6 +39,11 @@ public interface NoteService {
 
 	boolean addCollabarator(String noteId, String collabaratorEmail);
 
-	
 	List<String> getAllCollabarators(String noteId);
+
+	Response addRemainder(LocalDateTime dateTime, String noteId, String email, Enum repeat);
+
+	Response updateRemainder(LocalDateTime dateTime, String noteId, String email, Enum repeat);
+
+	public Response deleteRemainder(String noteId, String token);
 }

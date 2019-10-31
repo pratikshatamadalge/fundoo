@@ -27,5 +27,4 @@ public class RegisterDTO {
 
 	@NotNull(message = "mobileNo is mandtory")
 	private long mobileNo;
-
 }

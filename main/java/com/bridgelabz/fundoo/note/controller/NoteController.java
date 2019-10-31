@@ -1,9 +1,11 @@
 package com.bridgelabz.fundoo.note.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +23,7 @@ import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.exception.NoteServiceException;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.service.NoteService;
+import com.bridgelabz.fundoo.utility.TokenUtil;
 
 /**
  * Purpose:Note controller to do CRUD operation of a note
@@ -38,6 +41,9 @@ public class NoteController {
 	@Autowired
 	Environment environment;
 
+	@Autowired
+	TokenUtil tokenUtil;
+
 	/**
 	 * Purpose:To create note
 	 * 
@@ -46,7 +52,8 @@ public class NoteController {
 	 */
 	@PostMapping("/createNote")
 	public ResponseEntity<Response> createNote(@RequestBody NoteDTO noteDTO, @RequestHeader String token) {
-		Response str = noteService.createNote(noteDTO, token);
+		String emailId = tokenUtil.decodeToken(token);
+		Response str = noteService.createNote(noteDTO, emailId);
 		return new ResponseEntity<Response>(str, HttpStatus.OK);
 	}
 
@@ -57,9 +64,10 @@ public class NoteController {
 	 * @return Response( http status,error code,data )
 	 */
 	@GetMapping("/getNote")
-	public ResponseEntity<List> getAllNote(@RequestHeader String token) {
-		List<Note> note = noteService.getAllNote(token);
-		return new ResponseEntity<List>(note, HttpStatus.OK);
+	public ResponseEntity<List<Note>> getAllNote(@RequestHeader String token) {
+		String emailId = tokenUtil.decodeToken(token);
+		List<Note> note = noteService.getAllNote(emailId);
+		return new ResponseEntity<>(note, HttpStatus.OK);
 	}
 
 	/**
@@ -72,10 +80,10 @@ public class NoteController {
 	@PutMapping("/updateNote")
 	public ResponseEntity<Response> updateNote(@RequestBody NoteDTO noteDTO, @RequestParam String noteId,
 			@RequestHeader String token) {
-		System.out.println("in controller :" + noteId + ", " + noteDTO);
+		String emailId = tokenUtil.decodeToken(token);
 		Response str = null;
 		try {
-			str = noteService.updateNote(noteId, noteDTO, token);
+			str = noteService.updateNote(noteId, noteDTO, emailId);
 		} catch (NoteServiceException e) {
 			e.printStackTrace();
 		}
@@ -90,10 +98,10 @@ public class NoteController {
 	 */
 	@DeleteMapping("/deleteNote")
 	public ResponseEntity<Response> deleteNote(@RequestParam String noteId, @RequestHeader String token) {
-		System.out.println("in controller id :" + noteId);
+		String emailId = tokenUtil.decodeToken(token);
 		Response str = null;
 		try {
-			str = noteService.deleteNote(noteId, token);
+			str = noteService.deleteNote(noteId, emailId);
 		} catch (NoteServiceException e) {
 
 			e.printStackTrace();
@@ -111,7 +119,8 @@ public class NoteController {
 	@PutMapping("/pin")
 	public ResponseEntity<Response> pinNote(@RequestParam String noteId, @RequestHeader String token)
 			throws NoteServiceException {
-		Response status = noteService.isPinned(noteId, token);
+		String emailId = tokenUtil.decodeToken(token);
+		Response status = noteService.isPinned(noteId, emailId);
 		return new ResponseEntity<Response>(status, HttpStatus.OK);
 	}
 
@@ -125,7 +134,8 @@ public class NoteController {
 	@PutMapping("/archive")
 	public ResponseEntity<Response> archiveNote(@RequestParam String noteId, @RequestHeader String token)
 			throws NoteServiceException {
-		Response status = noteService.isArcheived(noteId, token);
+		String emailId = tokenUtil.decodeToken(token);
+		Response status = noteService.isArcheived(noteId, emailId);
 		return new ResponseEntity<Response>(status, HttpStatus.OK);
 	}
 
@@ -137,7 +147,8 @@ public class NoteController {
 	 */
 	@PutMapping("/trash")
 	public ResponseEntity<Response> trashNote(@RequestParam String noteId, @RequestHeader String token) {
-		Response status = noteService.isTrashed(noteId, token);
+		String emailId = tokenUtil.decodeToken(token);
+		Response status = noteService.isTrashed(noteId, emailId);
 		return new ResponseEntity<Response>(status, HttpStatus.OK);
 	}
 
@@ -151,7 +162,8 @@ public class NoteController {
 	@PutMapping("/addLabel")
 	public ResponseEntity<Response> addLabel(@RequestParam String noteId, @RequestParam String labelId,
 			@RequestHeader String token) {
-		Response status = noteService.addLabel(noteId, labelId, token);
+		String emailId = tokenUtil.decodeToken(token);
+		Response status = noteService.addLabel(noteId, labelId, emailId);
 		return new ResponseEntity<Response>(status, HttpStatus.OK);
 	}
 
@@ -161,9 +173,10 @@ public class NoteController {
 	 * @return Response( http status,error code,data )
 	 */
 	@GetMapping("/sortByTitle")
-	public ResponseEntity<List> sortByTitle(@RequestHeader String token) {
-		List<Note> note = noteService.sortByTitle(token);
-		return new ResponseEntity<List>(note, HttpStatus.OK);
+	public ResponseEntity<List<Note>> sortByTitle(@RequestHeader String token) {
+		String emailId = tokenUtil.decodeToken(token);
+		List<Note> note = noteService.sortByTitle(emailId);
+		return new ResponseEntity<>(note, HttpStatus.OK);
 	}
 
 	/**
@@ -172,11 +185,16 @@ public class NoteController {
 	 * @return Response( http status,error code,data )
 	 */
 	@GetMapping("/sortByDate")
-	public ResponseEntity<List> sortByDate(@RequestHeader String token) {
-		List<Note> note = noteService.sortByDate(token);
-		return new ResponseEntity<List>(note, HttpStatus.OK);
+	public ResponseEntity<List<Note>> sortByDate(@RequestHeader String token) {
+		String emailId = tokenUtil.decodeToken(token);
+		List<Note> note = noteService.sortByDate(emailId);
+		return new ResponseEntity<>(note, HttpStatus.OK);
 	}
 
+	/**
+	 * @param noteId
+	 * @return
+	 */
 	@GetMapping("/getAllCollabaratorsOfNote")
 	public Response getAllCollabarators(@RequestParam String noteId) {
 		List<String> collabList = noteService.getAllCollabarators(noteId);
@@ -186,9 +204,13 @@ public class NoteController {
 			return new Response(200, "List of collabarators....", collabList);
 		else
 			return new Response(200, null, "No collabarartors found for given note...");
-
 	}
 
+	/**
+	 * @param noteId
+	 * @param collabaratorEmail
+	 * @return
+	 */
 	@PutMapping("/addCollabrator")
 	public Response addCollabaratorToNote(@RequestParam String noteId, @RequestParam String collabaratorEmail) {
 		if (noteService.addCollabarator(noteId, collabaratorEmail))
@@ -197,4 +219,47 @@ public class NoteController {
 		return new Response(404, null, "Invalid noteId");
 	}
 
+	/**
+	 * @param reminder
+	 * @param repeat
+	 * @param noteId
+	 * @param token
+	 * @return
+	 */
+	@PutMapping("/addRemainder")
+	public ResponseEntity<Response> addRemainder(
+			@RequestParam("remainder") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime reminder,
+			@RequestParam("repeat") Enum repeat, @RequestHeader String noteId, @RequestHeader String token) {
+		String emailId = tokenUtil.decodeToken(token);
+		Response status = noteService.addRemainder(reminder, noteId, emailId, repeat);
+		return new ResponseEntity<Response>(status, HttpStatus.OK);
+	}
+
+	/**
+	 * @param reminder
+	 * @param repeat
+	 * @param noteId
+	 * @param token
+	 * @return
+	 */
+	@PutMapping("/updateRemainder")
+	public ResponseEntity<Response> updateRemainder(
+			@RequestParam("remainder") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime reminder,
+			@RequestParam("repeat") Enum repeat, @RequestHeader String noteId, @RequestHeader String token) {
+		String emailId = tokenUtil.decodeToken(token);
+		Response status = noteService.addRemainder(reminder, noteId, emailId, repeat);
+		return new ResponseEntity<Response>(status, HttpStatus.OK);
+	}
+
+	/**
+	 * @param noteId
+	 * @param token
+	 * @return
+	 */
+	@DeleteMapping("/deleteRemainder")
+	public ResponseEntity<Response> deleteRemainder(@RequestParam String noteId, @RequestHeader String token) {
+		String emailId = tokenUtil.decodeToken(token);
+		Response status = noteService.deleteRemainder(noteId, emailId);
+		return new ResponseEntity<Response>(status, HttpStatus.OK);
+	}
 }

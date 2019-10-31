@@ -12,7 +12,7 @@ public class NoteServiceException extends RuntimeException {
 	 * @param string
 	 */
 	public NoteServiceException(String message) {
-
+		super(message);
 	}
 
 }

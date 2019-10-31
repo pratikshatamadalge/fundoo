@@ -1,10 +1,14 @@
 package com.bridgelabz.fundoo.note.service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.search.NotTerm;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -24,22 +28,20 @@ import com.bridgelabz.fundoo.utility.TokenUtil;
  *
  */
 @Service
+@PropertySource("classpath:message.properties")
 public class NoteServiceImpl implements NoteService {
 
 	@Autowired
-	NoteRepository noteRepository;
+	private NoteRepository noteRepository;
 
 	@Autowired
-	ModelMapper modelMapper;
+	private ModelMapper modelMapper;
 
 	@Autowired
-	Environment environment;
+	private Environment environment;
 
 	@Autowired
-	LabelRepository labelRepository;
-
-	@Autowired
-	TokenUtil tokenUtil;
+	private LabelRepository labelRepository;
 
 	/**
 	 * Purpose:To create a Note
@@ -48,13 +50,15 @@ public class NoteServiceImpl implements NoteService {
 	 * @return Environment variable as a string
 	 */
 	@Override
-	public Response createNote(NoteDTO noteDTO, String token) {
-		String emailId = tokenUtil.decodeToken(token);
+	public Response createNote(NoteDTO noteDTO, String emailId) {
 
 		Note note = modelMapper.map(noteDTO, Note.class);
 		note.setCreatedTime(new Date());
 		note.setEditedTime(new Date());
 		note.setEmailId(emailId);
+		note.setIsPinned(false);
+		note.setIsArcheived(false);
+		note.setIsTrashed(false);
 		noteRepository.save(note);
 		return new Response(200, environment.getProperty("success"), null);
 	}
@@ -68,24 +72,20 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response updateNote(String noteId, NoteDTO noteDTO, String token) throws NoteServiceException {
-		String emailId = tokenUtil.decodeToken(token);
-		// Note note = noteRepository.findByEmailId(emailId);
+	public Response updateNote(String noteId, NoteDTO noteDTO, String emailId) throws NoteServiceException {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (note == null) {
-			throw new NoteServiceException("note is not present");
+			throw new NoteServiceException(environment.getProperty("notExist"));
 		}
 		if (noteDTO.getTitle() != null && noteDTO.getDescription() != null) {
 			note.setTitle(noteDTO.getTitle());
 			note.setDescription(noteDTO.getDescription());
-			note.setEditedTime(new Date());
 		} else if (noteDTO.getTitle() != null) {
 			note.setTitle(noteDTO.getTitle());
-			note.setEditedTime(new Date());
 		} else if (noteDTO.getDescription() != null) {
 			note.setDescription(noteDTO.getDescription());
-			note.setEditedTime(new Date());
 		}
+		note.setEditedTime(new Date());
 		noteRepository.save(note);
 		return new Response(200, environment.getProperty("update"), null);
 	}
@@ -98,17 +98,21 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response deleteNote(String noteId, String token) throws NoteServiceException {
-		String emailId = tokenUtil.decodeToken(token);
+	public Response deleteNote(String noteId, String emailId) throws NoteServiceException {
 		Note noteUser = noteRepository.findByIdAndEmailId(noteId, emailId);
-		if (noteUser.getEmailId().contentEquals(emailId)) {
+		if (noteUser == null) {
+			throw new NoteServiceException(environment.getProperty("notExist"));
+		}
+		if (noteUser.getEmailId().contentEquals(emailId) && noteUser.getIsTrashed()) {
 			noteRepository.deleteById(noteId);
+
+//		List<Label> label = note.getLabels();
+//			for (Label label1 : label) {
+//				label1.getNote().remove(note);
 			return new Response(200, environment.getProperty("delete"), null);
 		}
-		throw new NoteServiceException("note is not present");
-//		List<Label> label = note.getLabels();
-//		for (Label label1 : label) {
-//			label1.getNote().remove(note);
+		return new Response(400, "note is not present or it is not present in trash", null);
+
 	}
 
 	/**
@@ -117,8 +121,7 @@ public class NoteServiceImpl implements NoteService {
 	 * @return
 	 */
 	@Override
-	public List<Note> getAllNote(String token) {
-		String emailId = tokenUtil.decodeToken(token);
+	public List<Note> getAllNote(String emailId) {
 		List<Note> note = noteRepository.findAll();
 
 		// List<Label> label = note.getLabels();
@@ -136,11 +139,11 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response isPinned(String noteId, String token) throws NoteServiceException {
-		String emailId = tokenUtil.decodeToken(token);
-
+	public Response isPinned(String noteId, String emailId) throws NoteServiceException {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
+
 		if (note == null) {
+			System.out.println("in exception ");
 			throw new NoteServiceException(environment.getProperty("invalid"));
 		}
 		if (note.getIsPinned()) {
@@ -159,8 +162,7 @@ public class NoteServiceImpl implements NoteService {
 	 * @return Environment variable as a string
 	 */
 	@Override
-	public Response isTrashed(String noteId, String token) {
-		String emailId = tokenUtil.decodeToken(token);
+	public Response isTrashed(String noteId, String emailId) {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (note.getIsTrashed() == true) {
 			note.setIsTrashed(false);
@@ -179,8 +181,7 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response isArcheived(String noteId, String token) throws NoteServiceException {
-		String emailId = tokenUtil.decodeToken(token);
+	public Response isArcheived(String noteId, String emailId) throws NoteServiceException {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (note == null) {
 			throw new NoteServiceException(environment.getProperty("invalid"));
@@ -202,8 +203,7 @@ public class NoteServiceImpl implements NoteService {
 	 * @return Environment variable as a string
 	 */
 	@Override
-	public Response addLabel(String noteId, String labelId, String token) {
-		String emailId = tokenUtil.decodeToken(token);
+	public Response addLabel(String noteId, String labelId, String emailId) {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 
 		System.out.println("in service :" + note);
@@ -227,8 +227,7 @@ public class NoteServiceImpl implements NoteService {
 	 * 
 	 * @return Note list
 	 */
-	public List<Note> sortByTitle(String token) {
-		String emailId = tokenUtil.decodeToken(token);
+	public List<Note> sortByTitle(String emailId) {
 		List<Note> note = noteRepository.findByEmailId(emailId);
 		note.sort((n1, n2) -> n1.getTitle().compareTo(n2.getTitle()));
 		return note;
@@ -239,8 +238,7 @@ public class NoteServiceImpl implements NoteService {
 	 * 
 	 * @return Note list
 	 */
-	public List<Note> sortByDate(String token) {
-		String emailId = tokenUtil.decodeToken(token);
+	public List<Note> sortByDate(String emailId) {
 		List<Note> note = noteRepository.findByEmailId(emailId);
 		note.sort((n1, n2) -> n1.getCreatedTime().compareTo(n2.getCreatedTime()));
 		return note;
@@ -274,5 +272,60 @@ public class NoteServiceImpl implements NoteService {
 			return noteRepository.findById(noteId).get().getCollab();
 		else
 			return null;
+	}
+
+	/**
+	 * @param dateTime
+	 * @param noteId
+	 * @param email
+	 * @param repeat
+	 * @return
+	 */
+	public Response addRemainder(LocalDateTime dateTime, String noteId, String email, Enum repeat) {
+		Note note = noteRepository.findByIdAndEmailId(noteId, email);
+		if (note == null)
+			throw new NoteServiceException(environment.getProperty("notExist"));
+		if (dateTime.compareTo(LocalDateTime.now()) > 0) {
+			note.setRemainder(dateTime);
+			note.setRepeat(repeat);
+			noteRepository.save(note);
+			return new Response(200, "Remainder", null);
+		}
+		return new Response(400, "Failed to add remainder date time expired", null);
+	}
+
+	/**
+	 * @param dateTime
+	 * @param noteId
+	 * @param email
+	 * @param repeat
+	 * @return
+	 */
+	public Response updateRemainder(LocalDateTime dateTime, String noteId, String email, Enum repeat) {
+		Note note = noteRepository.findByIdAndEmailId(noteId, email);
+		if (note == null)
+			throw new NoteServiceException(environment.getProperty("notExist"));
+		if (dateTime.compareTo(LocalDateTime.now()) > 0) {
+			note.setRemainder(dateTime);
+			note.setRepeat(repeat);
+			noteRepository.save(note);
+			return new Response(200, "Remainder", null);
+		}
+		return new Response(400, "Failed to add remainder date time expired", null);
+	}
+
+	/**
+	 * @param noteId
+	 * @param token
+	 * @return
+	 */
+	@Override
+	public Response deleteRemainder(String noteId, String emailId) {
+		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
+		if (note == null)
+			throw new NoteServiceException(environment.getProperty("notExist"));
+		note.setRemainder(null);
+		noteRepository.save(note);
+		return null;
 	}
 }

@@ -57,10 +57,9 @@ public class UserController {
 	 * @return Response( http status,error code,data )
 	 */
 	@GetMapping("/getdata")
-	public ResponseEntity<List> getDetails() {
-
+	public ResponseEntity<List<User>> getDetails() {
 		List<User> user = userService.getUsers();
-		return new ResponseEntity<List>(user, HttpStatus.OK);
+		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 
 	/**
@@ -145,6 +144,6 @@ public class UserController {
 	@GetMapping("/validate")
 	public ResponseEntity<Response> validateUser(@RequestHeader String token) {
 		Response status = userService.validateUser(token);
-		return new ResponseEntity<Response>(status,HttpStatus.OK);
+		return new ResponseEntity<Response>(status, HttpStatus.OK);
 	}
 }

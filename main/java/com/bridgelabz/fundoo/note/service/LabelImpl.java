@@ -1,19 +1,15 @@
 package com.bridgelabz.fundoo.note.service;
 
 import java.util.List;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.LabelDTO;
 import com.bridgelabz.fundoo.note.model.Label;
-import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
-import com.bridgelabz.fundoo.note.repository.NoteRepository;
-import com.bridgelabz.fundoo.utility.TokenUtil;
 
 /**
  * Purpose: Label service implementation to provode service to the label
@@ -23,18 +19,13 @@ import com.bridgelabz.fundoo.utility.TokenUtil;
  *
  */
 @Service
+@PropertySource("classpath:message.properties")
 public class LabelImpl implements LabelService {
 	@Autowired
-	LabelRepository labelRepository;
+	private LabelRepository labelRepository;
 
 	@Autowired
-	NoteRepository noteRepository;
-
-	@Autowired
-	TokenUtil tokenUtil;
-
-	@Autowired
-	Environment environment;
+	private Environment environment;
 
 	/**
 	 * Purpose:To create label
@@ -44,8 +35,7 @@ public class LabelImpl implements LabelService {
 	 * @return
 	 */
 	@Override
-	public Response createLabel(String token, LabelDTO labelDTO) {
-		String emailId = tokenUtil.decodeToken(token);
+	public Response createLabel(String emailId, LabelDTO labelDTO) {
 		Label label = new ModelMapper().map(labelDTO, Label.class);
 		label.setEmailId(emailId);
 		label.setLabelName(labelDTO.getLabelName());
@@ -61,8 +51,7 @@ public class LabelImpl implements LabelService {
 	 * @return
 	 */
 	@Override
-	public List<Label> getLabel(String token) {
-		String emailId = tokenUtil.decodeToken(token);
+	public List<Label> getLabel(String emailId) {
 		List<Label> label = labelRepository.findByEmailId(emailId);
 		return label;
 	}
@@ -76,8 +65,7 @@ public class LabelImpl implements LabelService {
 	 * @return
 	 */
 	@Override
-	public Response updateLabel(String token, String labelId, String labelName) {
-		String emailId = tokenUtil.decodeToken(token);
+	public Response updateLabel(String emailId, String labelId, String labelName) {
 
 		Label label = labelRepository.findById(labelId).get();
 
@@ -96,7 +84,7 @@ public class LabelImpl implements LabelService {
 	 * @return
 	 */
 	@Override
-	public Response deleteLabel(String token, String labelId) {
+	public Response deleteLabel(String emailId, String labelId) {
 		// String emailId = tokenUtil.decodeToken(token);
 		labelRepository.deleteById(labelId);
 		return new Response(200, environment.getProperty("delete"), null);

@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.note.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,8 @@ public class Note {
 	private Boolean isArcheived;
 	private String emailId;
 	private List<String> collab = new ArrayList<String>();
+	private LocalDateTime remainder;
+	private Enum repeat;
 	@DBRef(lazy = true)
 	private List<Label> labels = new ArrayList<Label>();
 

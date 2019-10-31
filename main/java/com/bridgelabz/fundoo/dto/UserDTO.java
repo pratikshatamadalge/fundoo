@@ -8,8 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import lombok.Data;
 
 /**
- * @author Pratiksha Tamadalge 
- * Purpose:For login Whichever data is required is
+ * @author Pratiksha Tamadalge Purpose:For login Whichever data is required is
  *         mentioned in this DTO
  */
 @Data

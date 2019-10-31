@@ -19,6 +19,7 @@ import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.LabelDTO;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.service.LabelService;
+import com.bridgelabz.fundoo.utility.TokenUtil;
 
 /**
  * Purpose:Label controller To do CRUD operations
@@ -30,7 +31,10 @@ import com.bridgelabz.fundoo.note.service.LabelService;
 @RestController
 public class LabelController {
 	@Autowired
-	LabelService labelService;
+	private LabelService labelService;
+
+	@Autowired
+	private TokenUtil tokenUtil;
 
 	/**
 	 * Purpose:To create label
@@ -40,9 +44,10 @@ public class LabelController {
 	 * @return Response( http status,error code,data )
 	 */
 	@PostMapping("/createLabel")
-	public ResponseEntity<Response> createLabel(@RequestParam String token, @RequestBody LabelDTO labelDTO) {
-		System.out.println("inside the controller :" + labelDTO);
-		Response str = labelService.createLabel(token, labelDTO);
+	public ResponseEntity<Response> createLabel(@RequestHeader String token, @RequestBody LabelDTO labelDTO) {
+		String emailId = tokenUtil.decodeToken(token);
+
+		Response str = labelService.createLabel(emailId, labelDTO);
 		return new ResponseEntity<Response>(str, HttpStatus.OK);
 	}
 
@@ -54,7 +59,8 @@ public class LabelController {
 	 */
 	@GetMapping("/getLabel")
 	public ResponseEntity<List<Label>> getLabel(@RequestHeader String token) {
-		List<Label> label = labelService.getLabel(token);
+		String emailId = tokenUtil.decodeToken(token);
+		List<Label> label = labelService.getLabel(emailId);
 		return new ResponseEntity<List<Label>>(label, HttpStatus.OK);
 	}
 
@@ -67,7 +73,8 @@ public class LabelController {
 	 */
 	@DeleteMapping("/deleteLabel")
 	public ResponseEntity<Response> deleteLabel(@RequestHeader String token, @RequestParam String labelId) {
-		Response str = labelService.deleteLabel(token, labelId);
+		String emailId = tokenUtil.decodeToken(token);
+		Response str = labelService.deleteLabel(emailId, labelId);
 		return new ResponseEntity<Response>(str, HttpStatus.OK);
 	}
 
@@ -82,7 +89,8 @@ public class LabelController {
 	@PutMapping("/updateLabel")
 	public ResponseEntity<Response> updateLabel(@RequestHeader String token, @RequestParam String labelId,
 			@RequestParam String labelName) {
-		Response str = labelService.updateLabel(token, labelId, labelName);
+		String emailId = tokenUtil.decodeToken(token);
+		Response str = labelService.updateLabel(emailId, labelId, labelName);
 		return new ResponseEntity<Response>(str, HttpStatus.OK);
 	}
 }
