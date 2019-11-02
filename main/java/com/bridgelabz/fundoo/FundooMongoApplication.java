@@ -18,6 +18,5 @@ public class FundooMongoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FundooMongoApplication.class, args);
-		System.out.println("Spring boot project started");
 	}
 }

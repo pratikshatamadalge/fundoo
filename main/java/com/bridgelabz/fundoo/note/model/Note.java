@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.bridgelabz.fundoo.note.util.ENUM;
+
 import lombok.Data;
 
 @Document
@@ -25,10 +27,10 @@ public class Note {
 	private Boolean isTrashed;
 	private Boolean isArcheived;
 	private String emailId;
-	private List<String> collab = new ArrayList<String>();
+	private List<String> collab = new ArrayList<>();
 	private LocalDateTime remainder;
-	private Enum repeat;
+	private ENUM repeat;
 	@DBRef(lazy = true)
-	private List<Label> labels = new ArrayList<Label>();
+	private List<Label> labels = new ArrayList<>();
 
 }

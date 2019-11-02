@@ -1,15 +1,23 @@
 package com.bridgelabz.fundoo.note.service;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import com.bridgelabz.fundoo.controller.UserController;
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.LabelDTO;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
+import com.bridgelabz.fundoo.utility.StaticReference;
 
 /**
  * Purpose: Label service implementation to provode service to the label
@@ -21,11 +29,10 @@ import com.bridgelabz.fundoo.note.repository.LabelRepository;
 @Service
 @PropertySource("classpath:message.properties")
 public class LabelImpl implements LabelService {
+
+	private static final Logger LOG = LoggerFactory.getLogger(LabelImpl.class);
 	@Autowired
 	private LabelRepository labelRepository;
-
-	@Autowired
-	private Environment environment;
 
 	/**
 	 * Purpose:To create label
@@ -41,7 +48,7 @@ public class LabelImpl implements LabelService {
 		label.setLabelName(labelDTO.getLabelName());
 		labelRepository.save(label);
 
-		return new Response(200, environment.getProperty("success"), null);
+		return new Response(HttpStatus.OK, StaticReference.SUCCESSFULL, null);
 	}
 
 	/**
@@ -52,8 +59,7 @@ public class LabelImpl implements LabelService {
 	 */
 	@Override
 	public List<Label> getLabel(String emailId) {
-		List<Label> label = labelRepository.findByEmailId(emailId);
-		return label;
+		return labelRepository.findByEmailId(emailId);
 	}
 
 	/**
@@ -66,14 +72,16 @@ public class LabelImpl implements LabelService {
 	 */
 	@Override
 	public Response updateLabel(String emailId, String labelId, String labelName) {
-
-		Label label = labelRepository.findById(labelId).get();
-
-		label.setEmailId(emailId);
-		label.setLabelName(labelName);
-
-		labelRepository.save(label);
-		return new Response(200, environment.getProperty("update"), null);
+		Optional<Label> label = labelRepository.findById(labelId);
+		Label label1;
+		if (label.isPresent()) {
+			label1 = label.get();
+			label1.setEmailId(emailId);
+			label1.setLabelName(labelName);
+			labelRepository.save(label1);
+			return new Response(HttpStatus.OK, StaticReference.UPDATE, null);
+		}
+		return new Response(HttpStatus.BAD_REQUEST, StaticReference.UPDATE, null);
 	}
 
 	/**
@@ -85,8 +93,7 @@ public class LabelImpl implements LabelService {
 	 */
 	@Override
 	public Response deleteLabel(String emailId, String labelId) {
-		// String emailId = tokenUtil.decodeToken(token);
 		labelRepository.deleteById(labelId);
-		return new Response(200, environment.getProperty("delete"), null);
+		return new Response(HttpStatus.OK, StaticReference.DELETE, null);
 	}
 }

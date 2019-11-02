@@ -3,23 +3,25 @@ package com.bridgelabz.fundoo.note.service;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-
-import javax.mail.search.NotTerm;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.exception.NoteServiceException;
+import com.bridgelabz.fundoo.note.model.Collab;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
 import com.bridgelabz.fundoo.note.repository.NoteRepository;
-import com.bridgelabz.fundoo.utility.TokenUtil;
+import com.bridgelabz.fundoo.note.util.ENUM;
+import com.bridgelabz.fundoo.utility.StaticReference;
 
 /**
  * Purpose:To implement all the service for the note controller
@@ -60,7 +62,7 @@ public class NoteServiceImpl implements NoteService {
 		note.setIsArcheived(false);
 		note.setIsTrashed(false);
 		noteRepository.save(note);
-		return new Response(200, environment.getProperty("success"), null);
+		return new Response(HttpStatus.OK, environment.getProperty("success"), null);
 	}
 
 	/**
@@ -72,10 +74,10 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response updateNote(String noteId, NoteDTO noteDTO, String emailId) throws NoteServiceException {
+	public Response updateNote(String noteId, NoteDTO noteDTO, String emailId) {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (note == null) {
-			throw new NoteServiceException(environment.getProperty("notExist"));
+			throw new NoteServiceException(StaticReference.NOTEXIST);
 		}
 		if (noteDTO.getTitle() != null && noteDTO.getDescription() != null) {
 			note.setTitle(noteDTO.getTitle());
@@ -87,7 +89,7 @@ public class NoteServiceImpl implements NoteService {
 		}
 		note.setEditedTime(new Date());
 		noteRepository.save(note);
-		return new Response(200, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, StaticReference.UPDATE, null);
 	}
 
 	/**
@@ -98,21 +100,16 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response deleteNote(String noteId, String emailId) throws NoteServiceException {
+	public Response deleteNote(String noteId, String emailId) {
 		Note noteUser = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (noteUser == null) {
-			throw new NoteServiceException(environment.getProperty("notExist"));
+			throw new NoteServiceException(StaticReference.NOTEXIST);
 		}
 		if (noteUser.getEmailId().contentEquals(emailId) && noteUser.getIsTrashed()) {
 			noteRepository.deleteById(noteId);
-
-//		List<Label> label = note.getLabels();
-//			for (Label label1 : label) {
-//				label1.getNote().remove(note);
-			return new Response(200, environment.getProperty("delete"), null);
+			return new Response(HttpStatus.OK, environment.getProperty("delete"), null);
 		}
-		return new Response(400, "note is not present or it is not present in trash", null);
-
+		return new Response(HttpStatus.BAD_REQUEST, "note is not present or it is not present in trash", null);
 	}
 
 	/**
@@ -124,7 +121,6 @@ public class NoteServiceImpl implements NoteService {
 	public List<Note> getAllNote(String emailId) {
 		List<Note> note = noteRepository.findAll();
 
-		// List<Label> label = note.getLabels();
 		for (Note note1 : note) {
 			note1.getEmailId().matches(emailId);
 		}
@@ -139,20 +135,19 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response isPinned(String noteId, String emailId) throws NoteServiceException {
+	public Response isPinned(String noteId, String emailId) {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 
 		if (note == null) {
-			System.out.println("in exception ");
 			throw new NoteServiceException(environment.getProperty("invalid"));
 		}
-		if (note.getIsPinned()) {
+		if (note.getIsPinned() == true) {
 			note.setIsPinned(false);
 		} else {
 			note.setIsPinned(true);
 		}
 		noteRepository.save(note);
-		return new Response(200, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, StaticReference.UPDATE, null);
 	}
 
 	/**
@@ -166,11 +161,11 @@ public class NoteServiceImpl implements NoteService {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (note.getIsTrashed() == true) {
 			note.setIsTrashed(false);
-		} else {
-			note.setIsTrashed(true);
 		}
+		note.setIsTrashed(true);
+
 		noteRepository.save(note);
-		return new Response(200, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, StaticReference.UPDATE, null);
 	}
 
 	/**
@@ -181,7 +176,7 @@ public class NoteServiceImpl implements NoteService {
 	 * @throws NoteServiceException
 	 */
 	@Override
-	public Response isArcheived(String noteId, String emailId) throws NoteServiceException {
+	public Response isArcheived(String noteId, String emailId) {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (note == null) {
 			throw new NoteServiceException(environment.getProperty("invalid"));
@@ -192,7 +187,7 @@ public class NoteServiceImpl implements NoteService {
 			note.setIsArcheived(true);
 		}
 		noteRepository.save(note);
-		return new Response(200, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, environment.getProperty("update"), null);
 	}
 
 	/**
@@ -205,21 +200,19 @@ public class NoteServiceImpl implements NoteService {
 	@Override
 	public Response addLabel(String noteId, String labelId, String emailId) {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
-
-		System.out.println("in service :" + note);
-		if (note == null) {
-			return new Response(400, environment.getProperty("notExist"), null);
-		}
 		Label label = labelRepository.findById(labelId).get();
-		if (label == null) {
-			return new Response(400, environment.getProperty("notExist"), null);
+		if (note == null) {
+			return new Response(HttpStatus.BAD_REQUEST, StaticReference.NOTEXIST, null);
 		}
-		System.out.println("in service :" + label);
+		if (label == null) {
+			return new Response(HttpStatus.BAD_REQUEST, StaticReference.NOTEXIST, null);
+		}
 		note.getLabels().add(label);
 		label.getNote().add(note);
 		labelRepository.save(label);
 		noteRepository.save(note);
-		return new Response(200, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, environment.getProperty("update"), null);
+
 	}
 
 	/**
@@ -252,12 +245,11 @@ public class NoteServiceImpl implements NoteService {
 	@Override
 	public boolean addCollabarator(String noteId, String collabaratorEmail) {
 		Note note = noteRepository.findById(noteId).get();
-		if (note == null)
+		if (note == null) {
 			return false;
-		else {
-			note.getCollab().add(collabaratorEmail);
-			noteRepository.save(note);
 		}
+		note.getCollab().add(collabaratorEmail);
+		noteRepository.save(note);
 		return true;
 	}
 
@@ -266,12 +258,12 @@ public class NoteServiceImpl implements NoteService {
 	 * @return
 	 */
 	@Override
-	public List<String> getAllCollabarators(String noteId) {
-		Note note = noteRepository.findById(noteId).get();
-		if (note != null)
-			return noteRepository.findById(noteId).get().getCollab();
-		else
-			return null;
+	public Response getAllCollabarators(String noteId) {
+		Optional<Note> note = noteRepository.findById(noteId);
+		if (note.isPresent()) {
+			return new Response(HttpStatus.OK, StaticReference.SUCCESSFULL, note);
+		}
+		return new Response(HttpStatus.BAD_REQUEST, StaticReference.INVALID, null);
 	}
 
 	/**
@@ -281,7 +273,7 @@ public class NoteServiceImpl implements NoteService {
 	 * @param repeat
 	 * @return
 	 */
-	public Response addRemainder(LocalDateTime dateTime, String noteId, String email, Enum repeat) {
+	public Response addRemainder(LocalDateTime dateTime, String noteId, String email, ENUM repeat) {
 		Note note = noteRepository.findByIdAndEmailId(noteId, email);
 		if (note == null)
 			throw new NoteServiceException(environment.getProperty("notExist"));
@@ -289,9 +281,9 @@ public class NoteServiceImpl implements NoteService {
 			note.setRemainder(dateTime);
 			note.setRepeat(repeat);
 			noteRepository.save(note);
-			return new Response(200, "Remainder", null);
+			return new Response(HttpStatus.OK, "Remainder", null);
 		}
-		return new Response(400, "Failed to add remainder date time expired", null);
+		return new Response(HttpStatus.BAD_REQUEST, "Failed to add remainder date time expired", null);
 	}
 
 	/**
@@ -301,17 +293,17 @@ public class NoteServiceImpl implements NoteService {
 	 * @param repeat
 	 * @return
 	 */
-	public Response updateRemainder(LocalDateTime dateTime, String noteId, String email, Enum repeat) {
+	public Response updateRemainder(LocalDateTime dateTime, String noteId, String email, ENUM repeat) {
 		Note note = noteRepository.findByIdAndEmailId(noteId, email);
 		if (note == null)
-			throw new NoteServiceException(environment.getProperty("notExist"));
+			throw new NoteServiceException(StaticReference.NOTEXIST);
 		if (dateTime.compareTo(LocalDateTime.now()) > 0) {
 			note.setRemainder(dateTime);
 			note.setRepeat(repeat);
 			noteRepository.save(note);
-			return new Response(200, "Remainder", null);
+			return new Response(HttpStatus.OK, "Remainder", null);
 		}
-		return new Response(400, "Failed to add remainder date time expired", null);
+		return new Response(HttpStatus.BAD_REQUEST, "Failed to add remainder date time expired", null);
 	}
 
 	/**
@@ -326,6 +318,6 @@ public class NoteServiceImpl implements NoteService {
 			throw new NoteServiceException(environment.getProperty("notExist"));
 		note.setRemainder(null);
 		noteRepository.save(note);
-		return null;
+		return new Response(HttpStatus.OK, StaticReference.DELETE, null);
 	}
 }

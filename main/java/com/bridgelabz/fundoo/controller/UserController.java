@@ -5,6 +5,8 @@ import java.util.List;
 import javax.security.auth.login.LoginException;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import com.bridgelabz.fundoo.dto.UserDTO;
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.model.User;
 import com.bridgelabz.fundoo.service.IUserService;
+import com.bridgelabz.fundoo.utility.StaticReference;
 
 /**
  * Purpose:User Controller
@@ -34,6 +37,7 @@ import com.bridgelabz.fundoo.service.IUserService;
 @RequestMapping("/user")
 public class UserController {
 
+	private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 	@Autowired
 	private IUserService userService;
 
@@ -45,10 +49,9 @@ public class UserController {
 	 */
 	@PostMapping("/register")
 	public ResponseEntity<Response> register(@Valid @RequestBody RegisterDTO regDTO) {
-		System.out.println("User DTO : " + regDTO);
+		LOG.info(StaticReference.CONTROLLER_REGISTER_USER);
 		Response status = userService.register(regDTO);
-
-		return new ResponseEntity<Response>(status, HttpStatus.OK);
+		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 
 	/**
@@ -58,6 +61,7 @@ public class UserController {
 	 */
 	@GetMapping("/getdata")
 	public ResponseEntity<List<User>> getDetails() {
+		LOG.info(StaticReference.CONTROLLER_REGISTER_USER);
 		List<User> user = userService.getUsers();
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
@@ -67,17 +71,18 @@ public class UserController {
 	 * 
 	 * @param userDTO
 	 * @return Response( http status,error code,data )
+	 * @throws LoginException 
 	 */
 	@GetMapping("/login")
-	public ResponseEntity<Response> Login(@Valid @RequestBody UserDTO userDTO) {
-		System.out.println("Login data : " + userDTO);
+	public ResponseEntity<Response> login(@Valid @RequestBody UserDTO userDTO) throws LoginException {
+		LOG.info(StaticReference.CONTROLLER_LOGIN_USER);
 		Response str = null;
 		try {
 			str = userService.Login(userDTO);
 		} catch (LoginException e) {
-			e.printStackTrace();
+			throw new LoginException(StaticReference.INVALID);
 		}
-		return new ResponseEntity<Response>(str, HttpStatus.OK);
+		return new ResponseEntity<>(str, HttpStatus.OK);
 	}
 
 	/**
@@ -89,9 +94,9 @@ public class UserController {
 	 */
 	@PutMapping("/update")
 	public ResponseEntity<Response> updateUser(@RequestParam String oldEmail, @RequestParam String newEmail) {
-
+		LOG.info(StaticReference.CONTROLLER_UPDATE_USER);
 		Response status = userService.UpdateUser(oldEmail, newEmail);
-		return new ResponseEntity<Response>(status, HttpStatus.OK);
+		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 
 	/**
@@ -101,10 +106,10 @@ public class UserController {
 	 * @return Response( http status,error code,data )
 	 */
 	@DeleteMapping("/delete")
-	public ResponseEntity<Response> DeleteUser(@RequestParam String emailId) {
-		System.out.println("User To be Deleted: " + emailId);
+	public ResponseEntity<Response> deleteUser(@RequestParam String emailId) {
+		LOG.info(StaticReference.CONTROLLER_DELETE_USER);
 		Response status = userService.deleteUser(emailId);
-		return new ResponseEntity<Response>(status, HttpStatus.OK);
+		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 
 	/**
@@ -115,10 +120,9 @@ public class UserController {
 	 */
 	@GetMapping("/forgot")
 	public ResponseEntity<Response> forgotPassword(@RequestParam String emailId) {
-		System.out.println("password is resetting of the user :" + emailId);
+		LOG.info(StaticReference.CONTROLLER_FORGOT);
 		Response status = userService.sendEmail(emailId);
-
-		return new ResponseEntity<Response>(status, HttpStatus.OK);
+		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 
 	/**
@@ -131,8 +135,9 @@ public class UserController {
 	@PutMapping("/reset")
 	public ResponseEntity<Response> resetPassword(@RequestHeader String token, @RequestHeader String newPassword) {
 
+		LOG.info(StaticReference.CONTROLLER_RESET);
 		Response status = userService.resetPassword(token, newPassword);
-		return new ResponseEntity<Response>(status, HttpStatus.OK);
+		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 
 	/**
@@ -143,7 +148,8 @@ public class UserController {
 	 */
 	@GetMapping("/validate")
 	public ResponseEntity<Response> validateUser(@RequestHeader String token) {
+		LOG.info(StaticReference.CONTROLLER_VALIDATE_USER);
 		Response status = userService.validateUser(token);
-		return new ResponseEntity<Response>(status, HttpStatus.OK);
+		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 }

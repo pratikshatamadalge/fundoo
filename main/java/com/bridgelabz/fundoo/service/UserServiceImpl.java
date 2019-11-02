@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -54,7 +55,6 @@ public class UserServiceImpl implements IUserService {
 	 */
 	@Override
 	public Response register(RegisterDTO regDTO) {
-		System.out.println("in service User DTO : " + regDTO);
 
 		User user = new ModelMapper().map(regDTO, User.class);
 		if (userRepository.findByEmailId(user.getEmailId()) != null) {
@@ -69,7 +69,7 @@ public class UserServiceImpl implements IUserService {
 		message.setText("Varification token: " + token);
 		javaMailSender.send(message);
 		userRepository.save(user);
-		return new Response(200, environment.getProperty("registerSuccess"), null);
+		return new Response(HttpStatus.OK, environment.getProperty("registerSuccess"), null);
 	}
 
 	/**
@@ -82,15 +82,14 @@ public class UserServiceImpl implements IUserService {
 	@Override
 	public Response Login(UserDTO userDTO) throws LoginException {
 
-		System.out.println("In userDTO service :" + userDTO);
 		User user = userRepository.findByEmailId(userDTO.getEmailId());
 		if (user == null) {
 			throw new LoginException("this emailId is not registered yet!!");
 		}
 		if (new BCryptPasswordEncoder().matches(userDTO.getPassword(), user.getPassword())) {
-			return new Response(200, environment.getProperty("loginSuccess"), null);
+			return new Response(HttpStatus.OK, environment.getProperty("loginSuccess"), null);
 		}
-		return new Response(400, environment.getProperty("invalid"), null);
+		return new Response(HttpStatus.BAD_REQUEST, environment.getProperty("invalid"), null);
 	}
 
 	/**
@@ -100,8 +99,8 @@ public class UserServiceImpl implements IUserService {
 	 */
 	@Override
 	public List<User> getUsers() {
-		List<User> user = userRepository.findAll();
-		return user;
+		return userRepository.findAll();
+
 	}
 
 	/**
@@ -111,7 +110,7 @@ public class UserServiceImpl implements IUserService {
 	 */
 	public Response deleteUser(String emailId) {
 		userRepository.deleteByEmailId(emailId);
-		return new Response(200, environment.getProperty("delete"), null);
+		return new Response(HttpStatus.OK, environment.getProperty("delete"), null);
 	}
 
 	/**
@@ -129,7 +128,7 @@ public class UserServiceImpl implements IUserService {
 		user.setEmailId(newEmailId);
 		user.setUpdatedDate(new Date());
 		userRepository.save(user);
-		return new Response(200, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, environment.getProperty("update"), null);
 	}
 
 	/**
@@ -138,11 +137,8 @@ public class UserServiceImpl implements IUserService {
 	 * @param emailId
 	 */
 	public Response sendEmail(String emailId) {
-		System.out.println("in userserviceImpl :" + emailId);
 
-		User user = userRepository.findByEmailId(emailId);
-
-		System.out.println("User info of given mail: " + user);
+		userRepository.findByEmailId(emailId);
 		SimpleMailMessage message = new SimpleMailMessage();
 
 		String token = tokenUtil.createToken(emailId);
@@ -154,7 +150,7 @@ public class UserServiceImpl implements IUserService {
 
 		javaMailSender.send(message);
 
-		return new Response(200, environment.getProperty("sent"), null);
+		return new Response(HttpStatus.OK, environment.getProperty("sent"), null);
 	}
 
 	/**
@@ -165,20 +161,15 @@ public class UserServiceImpl implements IUserService {
 	 */
 	@Override
 	public Response resetPassword(String token, String newPassword) {
-
-		System.out.println("token is: " + token);
 		String emailId = tokenUtil.decodeToken(token);
-		System.out.println("token is: " + emailId);
 
 		User user = userRepository.findByEmailId(emailId);
 		if (user == null) {
 			throw new RegistrationException("This emailId is not registerd");
 		}
-		System.out.println("user data :" + user);
-
 		user.setPassword(new BCryptPasswordEncoder().encode(newPassword));
 		userRepository.save(user);
-		return new Response(200, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, environment.getProperty("update"), null);
 	}
 
 	/**
@@ -191,12 +182,12 @@ public class UserServiceImpl implements IUserService {
 	public Response validateUser(String token) {
 		String emailId = tokenUtil.decodeToken(token);
 		Boolean flag = userRepository.findAll().stream().anyMatch(i -> i.getEmailId().equals(emailId));
-		if (flag == true) {
+		if (Boolean.TRUE.equals(flag)) {
 			User user = userRepository.findByEmailId(emailId);
 			user.setIsActive(true);
 			user.setRegisteredDate(new Date());
 			userRepository.save(user);
-			return new Response(200, environment.getProperty("validate"), null);
+			return new Response(HttpStatus.OK, environment.getProperty("validate"), null);
 		}
 		throw new RegistrationException("register again");
 	}

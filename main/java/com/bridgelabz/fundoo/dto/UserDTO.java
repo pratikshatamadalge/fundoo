@@ -21,5 +21,4 @@ public class UserDTO {
 	@NotNull(message = "emailId is mandtory")
 	@Email
 	private String emailId;
-
 }

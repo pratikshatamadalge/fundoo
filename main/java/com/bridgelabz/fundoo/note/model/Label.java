@@ -21,5 +21,5 @@ public class Label {
 	private String labelName;
 	private String emailId;
 	@DBRef(lazy = true)
-	private List<Note> note = new ArrayList<Note>();
+	private List<Note> note = new ArrayList<>();
 }

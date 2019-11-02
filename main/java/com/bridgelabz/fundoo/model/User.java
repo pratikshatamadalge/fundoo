@@ -3,7 +3,6 @@ package com.bridgelabz.fundoo.model;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
@@ -29,7 +28,7 @@ public class User {
 
 	private Date registeredDate;
 
-	private Date UpdatedDate;
+	private Date updatedDate;
 
 	private Boolean isActive;
 }

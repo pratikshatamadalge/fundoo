@@ -2,6 +2,8 @@ package com.bridgelabz.fundoo.note.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.LabelDTO;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.service.LabelService;
+import com.bridgelabz.fundoo.utility.StaticReference;
 import com.bridgelabz.fundoo.utility.TokenUtil;
 
 /**
@@ -30,6 +33,8 @@ import com.bridgelabz.fundoo.utility.TokenUtil;
 @RequestMapping("/label")
 @RestController
 public class LabelController {
+
+	private static final Logger LOG = LoggerFactory.getLogger(LabelController.class);
 	@Autowired
 	private LabelService labelService;
 
@@ -45,10 +50,11 @@ public class LabelController {
 	 */
 	@PostMapping("/createLabel")
 	public ResponseEntity<Response> createLabel(@RequestHeader String token, @RequestBody LabelDTO labelDTO) {
+		LOG.info(StaticReference.CONTROLLER_CREATE_LABEL);
 		String emailId = tokenUtil.decodeToken(token);
 
 		Response str = labelService.createLabel(emailId, labelDTO);
-		return new ResponseEntity<Response>(str, HttpStatus.OK);
+		return new ResponseEntity<>(str, HttpStatus.OK);
 	}
 
 	/**
@@ -59,9 +65,10 @@ public class LabelController {
 	 */
 	@GetMapping("/getLabel")
 	public ResponseEntity<List<Label>> getLabel(@RequestHeader String token) {
+		LOG.info(StaticReference.CONTROLLER_GET_LABEL);
 		String emailId = tokenUtil.decodeToken(token);
 		List<Label> label = labelService.getLabel(emailId);
-		return new ResponseEntity<List<Label>>(label, HttpStatus.OK);
+		return new ResponseEntity<>(label, HttpStatus.OK);
 	}
 
 	/**
@@ -73,9 +80,10 @@ public class LabelController {
 	 */
 	@DeleteMapping("/deleteLabel")
 	public ResponseEntity<Response> deleteLabel(@RequestHeader String token, @RequestParam String labelId) {
+		LOG.info(StaticReference.CONTROLLER_DELETE_LABEL);
 		String emailId = tokenUtil.decodeToken(token);
 		Response str = labelService.deleteLabel(emailId, labelId);
-		return new ResponseEntity<Response>(str, HttpStatus.OK);
+		return new ResponseEntity<>(str, HttpStatus.OK);
 	}
 
 	/**
@@ -89,8 +97,9 @@ public class LabelController {
 	@PutMapping("/updateLabel")
 	public ResponseEntity<Response> updateLabel(@RequestHeader String token, @RequestParam String labelId,
 			@RequestParam String labelName) {
+		LOG.info(StaticReference.CONTROLLER_UPDATE_LABEL);
 		String emailId = tokenUtil.decodeToken(token);
 		Response str = labelService.updateLabel(emailId, labelId, labelName);
-		return new ResponseEntity<Response>(str, HttpStatus.OK);
+		return new ResponseEntity<>(str, str.getStatusCode());
 	}
 }

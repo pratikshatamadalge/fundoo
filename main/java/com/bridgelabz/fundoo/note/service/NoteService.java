@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
-import com.bridgelabz.fundoo.note.exception.NoteServiceException;
 import com.bridgelabz.fundoo.note.model.Note;
+import com.bridgelabz.fundoo.note.util.ENUM;
 
 /**
  * Purpose:note service interface to implement all the services to the note
@@ -19,17 +19,17 @@ public interface NoteService {
 
 	public Response createNote(NoteDTO noteDTO, String token);
 
-	public Response updateNote(String id, NoteDTO noteDTO, String token) throws NoteServiceException;
+	public Response updateNote(String id, NoteDTO noteDTO, String token);
 
-	public Response deleteNote(String id, String token) throws NoteServiceException;
+	public Response deleteNote(String id, String token);
 
 	public List<Note> getAllNote(String token);
 
-	public Response isPinned(String id, String token) throws NoteServiceException;
+	public Response isPinned(String id, String token);
 
 	public Response isTrashed(String id, String token);
 
-	public Response isArcheived(String id, String token) throws NoteServiceException;
+	public Response isArcheived(String id, String token);
 
 	public Response addLabel(String noteId, String labelId, String token);
 
@@ -39,11 +39,11 @@ public interface NoteService {
 
 	boolean addCollabarator(String noteId, String collabaratorEmail);
 
-	List<String> getAllCollabarators(String noteId);
+	Response getAllCollabarators(String noteId);
 
-	Response addRemainder(LocalDateTime dateTime, String noteId, String email, Enum repeat);
+	Response addRemainder(LocalDateTime dateTime, String noteId, String email, ENUM repeat);
 
-	Response updateRemainder(LocalDateTime dateTime, String noteId, String email, Enum repeat);
+	Response updateRemainder(LocalDateTime dateTime, String noteId, String email, ENUM repeat);
 
 	public Response deleteRemainder(String noteId, String token);
 }

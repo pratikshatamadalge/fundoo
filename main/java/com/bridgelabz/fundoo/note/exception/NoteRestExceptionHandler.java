@@ -22,6 +22,6 @@ public class NoteRestExceptionHandler {
 	@ExceptionHandler(NoteServiceException.class)
 	public ResponseEntity<NoteError> mapException(Exception exception) {
 		NoteError error = new NoteError(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), new Date());
-		return new ResponseEntity<NoteError>(error, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
 }
