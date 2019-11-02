@@ -1,9 +1,12 @@
 package com.bridgelabz.fundoo.service;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
 import java.util.List;
 
+import javax.mail.Multipart;
 import javax.security.auth.login.LoginException;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.dto.RegisterDTO;
 import com.bridgelabz.fundoo.dto.UserDTO;
@@ -20,13 +23,13 @@ public interface IUserService {
 
 	Response register(RegisterDTO regDTO);
 
-	Response Login(UserDTO userDTO) throws LoginException;
+	Response login(UserDTO userDTO) throws LoginException;
 
 	List<User> getUsers();
 
 	Response deleteUser(String emailId);
 
-	Response UpdateUser(String oldEmail, String newEmail);
+	Response updateUser(String oldEmail, String newEmail);
 
 	Response sendEmail(String emailId);
 
@@ -34,5 +37,10 @@ public interface IUserService {
 
 	Response validateUser(String token);
 
-	
+	Response saveProfile(MultipartFile image, String emailId) throws IOException;
+
+	Response updateProfile(Multipart image, String emailId);
+
+	Response deleteProfile(String emailId);
+
 }

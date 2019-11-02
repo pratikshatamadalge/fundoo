@@ -1,20 +1,26 @@
 package com.bridgelabz.fundoo.service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.Multipart;
 import javax.security.auth.login.LoginException;
 
+import org.bson.BsonBinarySubType;
+import org.bson.types.Binary;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.dto.RegisterDTO;
 import com.bridgelabz.fundoo.dto.UserDTO;
@@ -23,6 +29,7 @@ import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.model.User;
 
 import com.bridgelabz.fundoo.repository.IUserRepository;
+import com.bridgelabz.fundoo.utility.StaticReference;
 import com.bridgelabz.fundoo.utility.TokenUtil;
 
 /**
@@ -80,7 +87,7 @@ public class UserServiceImpl implements IUserService {
 	 * @throws LoginException
 	 */
 	@Override
-	public Response Login(UserDTO userDTO) throws LoginException {
+	public Response login(UserDTO userDTO) throws LoginException {
 
 		User user = userRepository.findByEmailId(userDTO.getEmailId());
 		if (user == null) {
@@ -120,7 +127,7 @@ public class UserServiceImpl implements IUserService {
 	 * @param newEmail
 	 */
 	@Override
-	public Response UpdateUser(String oldEmailId, String newEmailId) {
+	public Response updateUser(String oldEmailId, String newEmailId) {
 		User user = userRepository.findByEmailId(oldEmailId);
 		if (user == null) {
 			throw new RegistrationException("email is already is registered");
@@ -191,4 +198,26 @@ public class UserServiceImpl implements IUserService {
 		}
 		throw new RegistrationException("register again");
 	}
+
+	@Override
+	public Response saveProfile(MultipartFile file, String emailId) throws IOException {
+
+		User user = userRepository.findByEmailId(emailId);
+		user.setImage(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
+		userRepository.save(user);
+		return new Response(HttpStatus.OK, environment.getProperty("update"), null);
+	}
+
+	@Override
+	public Response updateProfile(Multipart image, String emailId) {
+
+		return null;
+	}
+
+	@Override
+	public Response deleteProfile(String emailId) {
+
+		return null;
+	}
+
 }

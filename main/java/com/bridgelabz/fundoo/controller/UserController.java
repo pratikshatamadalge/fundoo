@@ -1,7 +1,9 @@
 package com.bridgelabz.fundoo.controller;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.mail.Multipart;
 import javax.security.auth.login.LoginException;
 import javax.validation.Valid;
 
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.fundoo.dto.RegisterDTO;
 import com.bridgelabz.fundoo.dto.UserDTO;
@@ -26,6 +29,7 @@ import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.model.User;
 import com.bridgelabz.fundoo.service.IUserService;
 import com.bridgelabz.fundoo.utility.StaticReference;
+import com.bridgelabz.fundoo.utility.TokenUtil;
 
 /**
  * Purpose:User Controller
@@ -40,6 +44,9 @@ public class UserController {
 	private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 	@Autowired
 	private IUserService userService;
+
+	@Autowired
+	private TokenUtil tokenUtil;
 
 	/**
 	 * Purpose:Register the user
@@ -71,14 +78,14 @@ public class UserController {
 	 * 
 	 * @param userDTO
 	 * @return Response( http status,error code,data )
-	 * @throws LoginException 
+	 * @throws LoginException
 	 */
 	@GetMapping("/login")
 	public ResponseEntity<Response> login(@Valid @RequestBody UserDTO userDTO) throws LoginException {
 		LOG.info(StaticReference.CONTROLLER_LOGIN_USER);
 		Response str = null;
 		try {
-			str = userService.Login(userDTO);
+			str = userService.login(userDTO);
 		} catch (LoginException e) {
 			throw new LoginException(StaticReference.INVALID);
 		}
@@ -95,7 +102,7 @@ public class UserController {
 	@PutMapping("/update")
 	public ResponseEntity<Response> updateUser(@RequestParam String oldEmail, @RequestParam String newEmail) {
 		LOG.info(StaticReference.CONTROLLER_UPDATE_USER);
-		Response status = userService.UpdateUser(oldEmail, newEmail);
+		Response status = userService.updateUser(oldEmail, newEmail);
 		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 
@@ -151,5 +158,47 @@ public class UserController {
 		LOG.info(StaticReference.CONTROLLER_VALIDATE_USER);
 		Response status = userService.validateUser(token);
 		return new ResponseEntity<>(status, HttpStatus.OK);
+	}
+
+	/**
+	 * Purpose: save profile picture
+	 * 
+	 * @param image
+	 * @param token
+	 * @return
+	 * @throws IOException 
+	 */
+	@PutMapping("/setProfile")
+	public ResponseEntity<Response> saveProfile(@RequestParam MultipartFile file, @RequestParam String token) throws IOException {
+		String emailId = tokenUtil.decodeToken(token);
+		Response status = userService.saveProfile(file, emailId);
+		return new ResponseEntity<>(status, status.getStatusCode());
+	}
+
+	/**
+	 * Purpose: update profile picture
+	 * 
+	 * @param image
+	 * @param token
+	 * @return
+	 */
+	@PutMapping("/updateProfile")
+	public ResponseEntity<Response> updateProfile(@RequestParam Multipart image, @RequestParam String token) {
+		String emailId = tokenUtil.decodeToken(token);
+		Response status = userService.updateProfile(image, emailId);
+		return new ResponseEntity<>(status, status.getStatusCode());
+	}
+
+	/**
+	 * Purpose: delete profile picture
+	 * 
+	 * @param token
+	 * @return
+	 */
+	@DeleteMapping("/deleteMapping")
+	public ResponseEntity<Response> deleteProfile(@RequestParam String token) {
+		String emailId = tokenUtil.decodeToken(token);
+		Response status = userService.deleteProfile(emailId);
+		return new ResponseEntity<>(status, status.getStatusCode());
 	}
 }
