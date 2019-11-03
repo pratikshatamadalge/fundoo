@@ -37,7 +37,7 @@ public interface NoteService {
 
 	public List<Note> sortByDate(String token);
 
-	boolean addCollabarator(String noteId, String collabaratorEmail);
+	Response addCollabarator(String noteId, String collabaratorEmail);
 
 	Response getAllCollabarators(String noteId);
 

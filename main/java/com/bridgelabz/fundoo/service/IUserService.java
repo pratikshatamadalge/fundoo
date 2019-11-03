@@ -42,5 +42,4 @@ public interface IUserService {
 	Response updateProfile(Multipart image, String emailId);
 
 	Response deleteProfile(String emailId);
-
 }

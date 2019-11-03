@@ -11,9 +11,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.bridgelabz.fundoo.note.util.ENUM;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Document
+@AllArgsConstructor
 @Data
 public class Note {
 

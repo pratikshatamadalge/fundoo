@@ -1,5 +1,85 @@
 package com.bridgelabz.fundoo;
 
-public class LabelServiceTest {
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.modelmapper.ModelMapper;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.bridgelabz.fundoo.note.dto.LabelDTO;
+import com.bridgelabz.fundoo.note.model.Label;
+import com.bridgelabz.fundoo.note.model.Note;
+import com.bridgelabz.fundoo.note.repository.LabelRepository;
+import com.bridgelabz.fundoo.note.service.LabelImpl;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class LabelServiceTest {
+	private MockMvc mockmvc;
+
+	@InjectMocks
+	LabelImpl labelImpl;
+
+	@Mock
+	LabelRepository labelRepository;
+
+	@Mock
+	LabelDTO labelDTO;
+
+	@Mock
+	ModelMapper modelMapper;
+
+	Label label = new Label("5dbc1b1c3f43762b578e7390", "Task", "pratikshatamadalge21@gmail,com", null);
+
+	@Before
+	public void Setup() throws Exception {
+		mockmvc = MockMvcBuilders.standaloneSetup(labelImpl).build();
+	}
+
+	@Test
+	public void createLabelTest() {
+		labelDTO.setLabelName("Junit");
+		// Optional<Label> already = Optional.of(label);
+		when(modelMapper.map(labelDTO, Label.class)).thenReturn(label);
+		when(labelRepository.save(label)).thenReturn(label);
+	}
+
+	@Test
+	public void updateLabelTest() {
+		// Optional<Label> already = Optional.of(label);
+		label.setLabelName("7 wonders in world....");
+		when(labelRepository.save(label)).thenReturn(label);
+	}
+
+	@Test
+	public void deleteLabelTest() {
+
+		List<Label> label1 = null;
+		String labelId = "5dba69b03f43761e31622cbe";
+		String emailId = "pratikshatamadalge21@gmail.com";
+		Optional<Label> already = Optional.of(label);
+		when(labelRepository.findByEmailId(emailId)).thenReturn(label1);
+		labelRepository.deleteById(labelId);
+
+	}
+
+	@Test
+	public void getLabelTest() {
+		List<Label> label1 = null;
+		String emailId = "pratikshatamadalge21@gmail.com";
+		Optional<Label> already = Optional.of(label);
+		when(labelRepository.findByEmailId(emailId)).thenReturn(label1);
+		assertEquals(label.getEmailId(), already.get().getEmailId());
+	}
 }

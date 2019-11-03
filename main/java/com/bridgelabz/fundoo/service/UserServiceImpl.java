@@ -13,7 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -135,7 +135,7 @@ public class UserServiceImpl implements IUserService {
 		user.setEmailId(newEmailId);
 		user.setUpdatedDate(new Date());
 		userRepository.save(user);
-		return new Response(HttpStatus.OK, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, StaticReference.UPDATE, null);
 	}
 
 	/**
@@ -199,25 +199,40 @@ public class UserServiceImpl implements IUserService {
 		throw new RegistrationException("register again");
 	}
 
+	/**
+	 * @param image
+	 * @param emailId
+	 * @return
+	 * @throws IOException
+	 */
 	@Override
 	public Response saveProfile(MultipartFile file, String emailId) throws IOException {
-
 		User user = userRepository.findByEmailId(emailId);
 		user.setImage(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
 		userRepository.save(user);
 		return new Response(HttpStatus.OK, environment.getProperty("update"), null);
 	}
 
+	/**
+	 * @param image
+	 * @param emailId
+	 * @return
+	 */
 	@Override
 	public Response updateProfile(Multipart image, String emailId) {
 
-		return null;
+		return new Response(HttpStatus.OK, StaticReference.UPDATE, null);
 	}
 
+	/**
+	 * @param emailId
+	 * @return
+	 */
 	@Override
 	public Response deleteProfile(String emailId) {
-
-		return null;
+		User user = userRepository.findByEmailId(emailId);
+		user.setImage(null);
+		return new Response(HttpStatus.OK, StaticReference.DELETE, null);
 	}
 
 }

@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Pratiksha Tamadalge
@@ -18,6 +19,7 @@ import lombok.Data;
 @Document(collection = "user")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
 	@Id

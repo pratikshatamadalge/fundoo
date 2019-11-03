@@ -209,7 +209,6 @@ public class NoteController {
 		LOG.info(StaticReference.CONTROLLER_GET_COLLABRATOR);
 		Response status = noteService.getAllCollabarators(noteId);
 		return new ResponseEntity<>(status, status.getStatusCode());
-
 	}
 
 	/**
@@ -218,12 +217,11 @@ public class NoteController {
 	 * @return
 	 */
 	@PutMapping("/addCollabrator")
-	public Response addCollabaratorToNote(@RequestParam String noteId, @RequestParam String collabaratorEmail) {
+	public ResponseEntity<Response> addCollabaratorToNote(@RequestParam String noteId,
+			@RequestParam String collabaratorEmail) {
 		LOG.info(StaticReference.CONTROLLER_ADD_COLLABRATOR);
-		if (noteService.addCollabarator(noteId, collabaratorEmail))
-			return new Response(HttpStatus.OK, null, "Collabarator added successfully....");
-
-		return new Response(HttpStatus.BAD_REQUEST, null, "Invalid noteId");
+		Response status = noteService.addCollabarator(noteId, collabaratorEmail);
+		return new ResponseEntity<>(status, status.getStatusCode());
 	}
 
 	/**

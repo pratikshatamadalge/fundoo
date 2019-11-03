@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.exception.NoteServiceException;
-import com.bridgelabz.fundoo.note.model.Collab;
+
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
@@ -161,8 +161,8 @@ public class NoteServiceImpl implements NoteService {
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		if (note.getIsTrashed() == true) {
 			note.setIsTrashed(false);
-		}
-		note.setIsTrashed(true);
+		} else
+			note.setIsTrashed(true);
 
 		noteRepository.save(note);
 		return new Response(HttpStatus.OK, StaticReference.UPDATE, null);
@@ -181,9 +181,9 @@ public class NoteServiceImpl implements NoteService {
 		if (note == null) {
 			throw new NoteServiceException(environment.getProperty("invalid"));
 		}
-		if (note.getIsArcheived() == true) {
+		if (note.getIsArcheived() == true)
 			note.setIsArcheived(false);
-		} else {
+		else {
 			note.setIsArcheived(true);
 		}
 		noteRepository.save(note);
@@ -243,14 +243,14 @@ public class NoteServiceImpl implements NoteService {
 	 * @return
 	 */
 	@Override
-	public boolean addCollabarator(String noteId, String collabaratorEmail) {
+	public Response addCollabarator(String noteId, String collabaratorEmail) {
 		Note note = noteRepository.findById(noteId).get();
 		if (note == null) {
-			return false;
+			return new Response(HttpStatus.BAD_REQUEST, StaticReference.NOTEXIST, null);
 		}
 		note.getCollab().add(collabaratorEmail);
 		noteRepository.save(note);
-		return true;
+		return new Response(HttpStatus.OK, StaticReference.SUCCESSFULL, null);
 	}
 
 	/**
