@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.bridgelabz.fundoo.note.dto.LabelDTO;
 import com.bridgelabz.fundoo.note.model.Label;
-import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
 import com.bridgelabz.fundoo.note.service.LabelImpl;
 
@@ -47,6 +46,9 @@ public class LabelServiceTest {
 		mockmvc = MockMvcBuilders.standaloneSetup(labelImpl).build();
 	}
 
+	/**
+	 * Test case for create label api
+	 */
 	@Test
 	public void createLabelTest() {
 		labelDTO.setLabelName("Junit");
@@ -55,6 +57,9 @@ public class LabelServiceTest {
 		when(labelRepository.save(label)).thenReturn(label);
 	}
 
+	/**
+	 * Test case for update label api
+	 */
 	@Test
 	public void updateLabelTest() {
 		// Optional<Label> already = Optional.of(label);
@@ -62,18 +67,24 @@ public class LabelServiceTest {
 		when(labelRepository.save(label)).thenReturn(label);
 	}
 
+	/**
+	 * Test case for delete label api
+	 */
 	@Test
 	public void deleteLabelTest() {
 
 		List<Label> label1 = null;
 		String labelId = "5dba69b03f43761e31622cbe";
 		String emailId = "pratikshatamadalge21@gmail.com";
-		Optional<Label> already = Optional.of(label);
+		// Optional<Label> already = Optional.of(label);
 		when(labelRepository.findByEmailId(emailId)).thenReturn(label1);
 		labelRepository.deleteById(labelId);
 
 	}
 
+	/**
+	 * Test case to fetch all label api
+	 */
 	@Test
 	public void getLabelTest() {
 		List<Label> label1 = null;

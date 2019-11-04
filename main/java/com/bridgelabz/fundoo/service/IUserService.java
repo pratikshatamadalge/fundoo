@@ -37,9 +37,9 @@ public interface IUserService {
 
 	Response validateUser(String token);
 
-	Response saveProfile(MultipartFile image, String emailId) throws IOException;
+	Response saveProfilePic(MultipartFile file, String emailId) throws IOException, LoginException;
 
-	Response updateProfile(Multipart image, String emailId);
+	Response updateProfilePic(MultipartFile file, String emailId) throws IOException, LoginException;
 
-	Response deleteProfile(String emailId);
+	Response deleteProfilePic(String emailId) throws LoginException;
 }

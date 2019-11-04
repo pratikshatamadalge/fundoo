@@ -2,9 +2,6 @@ package com.bridgelabz.fundoo.model;
 
 import java.util.Date;
 
-import javax.mail.Multipart;
-
-import org.bson.types.Binary;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -38,6 +35,6 @@ public class User {
 	private Date updatedDate;
 
 	private Boolean isActive;
-	
-	private Binary image;
+
+	private String profilePic;
 }

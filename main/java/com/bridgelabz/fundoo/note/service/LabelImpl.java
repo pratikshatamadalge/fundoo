@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoo.model.Response;
+
 import com.bridgelabz.fundoo.note.dto.LabelDTO;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
@@ -28,6 +30,8 @@ import com.bridgelabz.fundoo.utility.StaticReference;
 @PropertySource("classpath:message.properties")
 public class LabelImpl implements LabelService {
 
+	private static final Logger LOG = LoggerFactory.getLogger(LabelImpl.class);
+
 	@Autowired
 	private LabelRepository labelRepository;
 
@@ -40,6 +44,7 @@ public class LabelImpl implements LabelService {
 	 */
 	@Override
 	public Response createLabel(String emailId, LabelDTO labelDTO) {
+		LOG.info(StaticReference.SERVICE_CREATE_LABEL);
 		Label label = new ModelMapper().map(labelDTO, Label.class);
 		label.setEmailId(emailId);
 		label.setLabelName(labelDTO.getLabelName());
@@ -56,6 +61,7 @@ public class LabelImpl implements LabelService {
 	 */
 	@Override
 	public List<Label> getLabel(String emailId) {
+		LOG.info(StaticReference.SERVICE_GET_LABEL);
 		return labelRepository.findByEmailId(emailId);
 	}
 
@@ -69,6 +75,7 @@ public class LabelImpl implements LabelService {
 	 */
 	@Override
 	public Response updateLabel(String emailId, String labelId, String labelName) {
+		LOG.info(StaticReference.SERVICE_UPDATE_LABEL);
 		Optional<Label> label = labelRepository.findById(labelId);
 		Label label1;
 		if (label.isPresent()) {
@@ -90,6 +97,7 @@ public class LabelImpl implements LabelService {
 	 */
 	@Override
 	public Response deleteLabel(String emailId, String labelId) {
+		LOG.info(StaticReference.SERVICE_DELETE_LABEL);
 		labelRepository.deleteById(labelId);
 		return new Response(HttpStatus.OK, StaticReference.DELETE, null);
 	}

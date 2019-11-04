@@ -14,11 +14,13 @@ import lombok.Data;
 @Data
 public class UserDTO {
 
+	@NotNull(message = "emailId is mandtory")
+	@Email
+	private String emailId;
+	
 	@Length(min = 8)
 	@NotNull(message = "password is mandtory")
 	private String password;
 
-	@NotNull(message = "emailId is mandtory")
-	@Email
-	private String emailId;
+	
 }

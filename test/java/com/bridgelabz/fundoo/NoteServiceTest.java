@@ -26,6 +26,7 @@ import com.bridgelabz.fundoo.note.service.NoteServiceImpl;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class NoteServiceTest {
+
 	private MockMvc mockmvc;
 
 	@InjectMocks
@@ -51,6 +52,12 @@ public class NoteServiceTest {
 		mockmvc = MockMvcBuilders.standaloneSetup(noteService).build();
 	}
 
+	/**
+	 * 
+	 * Test case foe create note api
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void createNoteTest() throws Exception {
 		noteDTO.setDescription("7 wonders in world");
@@ -61,6 +68,9 @@ public class NoteServiceTest {
 		assertEquals(noteDTO.getTitle(), already.get().getEmailId());
 	}
 
+	/**
+	 * Test case for update note api
+	 */
 	@Test
 	public void updateNoteTest() {
 		Optional<Note> already = Optional.of(note);
@@ -70,6 +80,9 @@ public class NoteServiceTest {
 		assertEquals(noteDTO.getTitle(), already.get().getEmailId());
 	}
 
+	/**
+	 * Test case for delete note api
+	 */
 	@Test
 	public void deleteNoteTest() {
 		String noteId = "5dba69b03f43761e31622cbe";
@@ -80,6 +93,9 @@ public class NoteServiceTest {
 		assertEquals(note.getId(), already.get().getId());
 	}
 
+	/**
+	 * Test case to fetch all note
+	 */
 	@Test
 	public void getAllNoteTest() {
 		List<Note> note1 = null;
@@ -89,6 +105,9 @@ public class NoteServiceTest {
 		assertEquals(note.getEmailId(), already.get().getEmailId());
 	}
 
+	/**
+	 * Test case for isPinned api
+	 */
 	@Test
 	public void isPinnedTest() {
 		String noteId = "5dba69b03f43761e31622cbe";
@@ -101,6 +120,9 @@ public class NoteServiceTest {
 			note.setIsPinned(true);
 	}
 
+	/**
+	 * Test case for isTrashed api
+	 */
 	@Test
 	public void isTrashedTest() {
 		String noteId = "5dba69b03f43761e31622cbe";
@@ -113,8 +135,11 @@ public class NoteServiceTest {
 			note.setIsTrashed(false);
 	}
 
+	/**
+	 * Test case for isArchieved api
+	 */
 	@Test
-	public void isAechievedTest() {
+	public void isArchievedTest() {
 		String noteId = "5dba69b03f43761e31622cbe";
 		String emailId = "shelkeva@gmail.com";
 		note.setIsArcheived(false);

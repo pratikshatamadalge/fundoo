@@ -1,14 +1,15 @@
 package com.bridgelabz.fundoo.service;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 
-import javax.mail.Multipart;
 import javax.security.auth.login.LoginException;
 
-import org.bson.BsonBinarySubType;
-import org.bson.types.Binary;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -65,7 +66,7 @@ public class UserServiceImpl implements IUserService {
 
 		User user = new ModelMapper().map(regDTO, User.class);
 		if (userRepository.findByEmailId(user.getEmailId()) != null) {
-			throw new RegistrationException("email is already registered");
+			throw new RegistrationException(StaticReference.EXIST);
 		}
 		user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 		String token = tokenUtil.createToken(regDTO.getEmailId());
@@ -145,19 +146,23 @@ public class UserServiceImpl implements IUserService {
 	 */
 	public Response sendEmail(String emailId) {
 
-		userRepository.findByEmailId(emailId);
-		SimpleMailMessage message = new SimpleMailMessage();
+		User user = userRepository.findByEmailId(emailId);
+		if (user != null) {
+			SimpleMailMessage message = new SimpleMailMessage();
 
-		String token = tokenUtil.createToken(emailId);
+			String token = tokenUtil.createToken(emailId);
 
-		message.setFrom("pratikshatamadalge@gmail.com");
-		message.setTo(emailId);
-		message.setSubject("Reset password Varification");
-		message.setText("Varification token: " + token);
+			message.setFrom("pratikshatamadalge@gmail.com");
+			message.setTo(emailId);
+			message.setSubject("Reset password Varification");
+			message.setText("Varification token: " + token);
 
-		javaMailSender.send(message);
+			javaMailSender.send(message);
 
-		return new Response(HttpStatus.OK, environment.getProperty("sent"), null);
+			return new Response(HttpStatus.OK, environment.getProperty("sent"), null);
+		}
+		return new Response(HttpStatus.BAD_REQUEST, StaticReference.NOTEXIST, null);
+
 	}
 
 	/**
@@ -200,39 +205,74 @@ public class UserServiceImpl implements IUserService {
 	}
 
 	/**
-	 * @param image
+	 * Purpose:To save profile pic
+	 * 
+	 * @param file
+	 * @param emailId
+	 * @return
+	 * @throws LoginException
+	 */
+	public Response saveProfilePic(MultipartFile file, String emailId) throws IOException, LoginException {
+		User user = userRepository.findByEmailId(emailId);
+		if (user == null)
+			throw new LoginException(StaticReference.NOTEXIST);
+
+		byte[] bytes = file.getBytes();
+		String extension = file.getContentType().replace("image/", "");
+		String fileLocation = StaticReference.PROFILE_PIC_LOCATION + emailId + "." + extension;
+		Path path = Paths.get(fileLocation);
+		Files.write(path, bytes);
+		user.setProfilePic(fileLocation);
+		userRepository.save(user);
+		return new Response(HttpStatus.OK, null, StaticReference.SUCCESSFULL);
+	}
+
+	/**
+	 * Purpose: To delete profile pic
+	 * 
+	 * @param emailId
+	 * @return
+	 * @throws LoginException
+	 */
+	@Override
+	public Response deleteProfilePic(String emailId) throws LoginException {
+		User user = userRepository.findByEmailId(emailId);
+		if (user == null)
+			throw new LoginException(StaticReference.NOTEXIST);
+		String fileLocation = user.getProfilePic();
+		File file = new File(fileLocation);
+		Boolean flag = file.delete();
+		if (flag) {
+			user.setProfilePic("");
+			userRepository.save(user);
+			return new Response(HttpStatus.OK, null, StaticReference.DELETE);
+		}
+		return new Response(HttpStatus.OK, null, StaticReference.DELETE);
+	}
+
+	/**
+	 * Purpose:To update profile pic
+	 * 
+	 * @param file
 	 * @param emailId
 	 * @return
 	 * @throws IOException
+	 * @throws LoginException
 	 */
-	@Override
-	public Response saveProfile(MultipartFile file, String emailId) throws IOException {
+	public Response updateProfilePic(MultipartFile file, String emailId) throws IOException, LoginException {
+
 		User user = userRepository.findByEmailId(emailId);
-		user.setImage(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
+		if (user == null)
+			throw new LoginException(StaticReference.NOTEXIST);
+
+		byte[] bytes = file.getBytes();
+		String extension = file.getContentType().replace("image/", "");
+		String fileLocation = StaticReference.PROFILE_PIC_LOCATION + emailId + "." + extension;
+		Path path = Paths.get(fileLocation);
+		Files.write(path, bytes);
+
+		user.setProfilePic(fileLocation);
 		userRepository.save(user);
-		return new Response(HttpStatus.OK, environment.getProperty("update"), null);
+		return new Response(HttpStatus.OK, null, StaticReference.UPDATE);
 	}
-
-	/**
-	 * @param image
-	 * @param emailId
-	 * @return
-	 */
-	@Override
-	public Response updateProfile(Multipart image, String emailId) {
-
-		return new Response(HttpStatus.OK, StaticReference.UPDATE, null);
-	}
-
-	/**
-	 * @param emailId
-	 * @return
-	 */
-	@Override
-	public Response deleteProfile(String emailId) {
-		User user = userRepository.findByEmailId(emailId);
-		user.setImage(null);
-		return new Response(HttpStatus.OK, StaticReference.DELETE, null);
-	}
-
 }

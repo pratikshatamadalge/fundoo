@@ -33,8 +33,8 @@ import com.bridgelabz.fundoo.utility.TokenUtil;
 @RequestMapping("/label")
 @RestController
 public class LabelController {
-
 	private static final Logger LOG = LoggerFactory.getLogger(LabelController.class);
+
 	@Autowired
 	private LabelService labelService;
 

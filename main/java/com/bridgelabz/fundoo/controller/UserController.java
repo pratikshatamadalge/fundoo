@@ -160,45 +160,24 @@ public class UserController {
 		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 
-	/**
-	 * Purpose: save profile picture
-	 * 
-	 * @param image
-	 * @param token
-	 * @return
-	 * @throws IOException 
-	 */
-	@PutMapping("/setProfile")
-	public ResponseEntity<Response> saveProfile(@RequestParam MultipartFile file, @RequestParam String token) throws IOException {
-		String emailId = tokenUtil.decodeToken(token);
-		Response status = userService.saveProfile(file, emailId);
-		return new ResponseEntity<>(status, status.getStatusCode());
+	@PostMapping("/profilepic")
+	public ResponseEntity<Response> addProfile(@RequestParam("file") MultipartFile file, @RequestHeader String token)
+			throws IOException, LoginException {
+		Response response = userService.saveProfilePic(file, tokenUtil.decodeToken(token));
+		return new ResponseEntity<>(response, response.getStatusCode());
 	}
 
-	/**
-	 * Purpose: update profile picture
-	 * 
-	 * @param image
-	 * @param token
-	 * @return
-	 */
-	@PutMapping("/updateProfile")
-	public ResponseEntity<Response> updateProfile(@RequestParam Multipart image, @RequestParam String token) {
-		String emailId = tokenUtil.decodeToken(token);
-		Response status = userService.updateProfile(image, emailId);
-		return new ResponseEntity<>(status, status.getStatusCode());
+	@DeleteMapping("/profilepic")
+	public ResponseEntity<Response> deleteProfile(@RequestHeader String token) throws LoginException {
+		Response response = userService.deleteProfilePic(tokenUtil.decodeToken(token));
+
+		return new ResponseEntity<>(response, response.getStatusCode());
 	}
 
-	/**
-	 * Purpose: delete profile picture
-	 * 
-	 * @param token
-	 * @return
-	 */
-	@DeleteMapping("/deleteMapping")
-	public ResponseEntity<Response> deleteProfile(@RequestParam String token) {
-		String emailId = tokenUtil.decodeToken(token);
-		Response status = userService.deleteProfile(emailId);
-		return new ResponseEntity<>(status, status.getStatusCode());
+	@PutMapping("/profilepic")
+	public ResponseEntity<Response> updateProfile(@RequestParam("file") MultipartFile file, @RequestHeader String token)
+			throws IOException, LoginException {
+		Response response = userService.updateProfilePic(file, tokenUtil.decodeToken(token));
+		return new ResponseEntity<>(response, response.getStatusCode());
 	}
 }

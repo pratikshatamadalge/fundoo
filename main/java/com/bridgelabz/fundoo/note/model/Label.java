@@ -24,4 +24,8 @@ public class Label {
 	private String emailId;
 	@DBRef(lazy = true)
 	private List<Note> note = new ArrayList<>();
+
+	public Label() {
+		// default constructor
+	}
 }

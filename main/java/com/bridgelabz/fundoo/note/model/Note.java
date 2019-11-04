@@ -18,7 +18,6 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class Note {
-
 	@Id
 	private String id;
 	private String title;
@@ -34,5 +33,8 @@ public class Note {
 	private ENUM repeat;
 	@DBRef(lazy = true)
 	private List<Label> labels = new ArrayList<>();
-
+	
+	public Note() {
+		
+	}
 }
