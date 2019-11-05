@@ -3,7 +3,6 @@ package com.bridgelabz.fundoo.controller;
 import java.io.IOException;
 import java.util.List;
 
-import javax.mail.Multipart;
 import javax.security.auth.login.LoginException;
 import javax.validation.Valid;
 
@@ -160,6 +159,15 @@ public class UserController {
 		return new ResponseEntity<>(status, HttpStatus.OK);
 	}
 
+	/**
+	 * Purpose:To set the profile pic of user
+	 * 
+	 * @param file
+	 * @param token
+	 * @return
+	 * @throws IOException
+	 * @throws LoginException
+	 */
 	@PostMapping("/profilepic")
 	public ResponseEntity<Response> addProfile(@RequestParam("file") MultipartFile file, @RequestHeader String token)
 			throws IOException, LoginException {
@@ -167,6 +175,13 @@ public class UserController {
 		return new ResponseEntity<>(response, response.getStatusCode());
 	}
 
+	/**
+	 * Purpose:To delete profile picture
+	 * 
+	 * @param token
+	 * @return
+	 * @throws LoginException
+	 */
 	@DeleteMapping("/profilepic")
 	public ResponseEntity<Response> deleteProfile(@RequestHeader String token) throws LoginException {
 		Response response = userService.deleteProfilePic(tokenUtil.decodeToken(token));
@@ -174,6 +189,15 @@ public class UserController {
 		return new ResponseEntity<>(response, response.getStatusCode());
 	}
 
+	/**
+	 * Purpose:To update profile pic
+	 * 
+	 * @param file
+	 * @param token
+	 * @return
+	 * @throws IOException
+	 * @throws LoginException
+	 */
 	@PutMapping("/profilepic")
 	public ResponseEntity<Response> updateProfile(@RequestParam("file") MultipartFile file, @RequestHeader String token)
 			throws IOException, LoginException {

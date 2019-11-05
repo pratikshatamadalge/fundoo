@@ -2,8 +2,6 @@ package com.bridgelabz.fundoo.service;
 
 import java.io.IOException;
 import java.util.List;
-
-import javax.mail.Multipart;
 import javax.security.auth.login.LoginException;
 
 import org.springframework.web.multipart.MultipartFile;

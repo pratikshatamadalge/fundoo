@@ -52,8 +52,7 @@ public class TokenUtil {
 		try {
 			verification = JWT.require(Algorithm.HMAC256(TOKEN_SECRET));
 		} catch (IllegalArgumentException e) {
-
-			e.printStackTrace();
+			
 		}
 		JWTVerifier jwtverifier = verification.build();
 		// to decode token

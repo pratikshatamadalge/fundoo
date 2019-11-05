@@ -11,7 +11,9 @@ import java.util.List;
 import javax.security.auth.login.LoginException;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
@@ -26,10 +28,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.fundoo.dto.RegisterDTO;
 import com.bridgelabz.fundoo.dto.UserDTO;
 import com.bridgelabz.fundoo.exception.RegistrationException;
+import com.bridgelabz.fundoo.model.MailData;
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.model.User;
 
 import com.bridgelabz.fundoo.repository.IUserRepository;
+import com.bridgelabz.fundoo.utility.EmailSender;
 import com.bridgelabz.fundoo.utility.StaticReference;
 import com.bridgelabz.fundoo.utility.TokenUtil;
 
@@ -55,6 +59,9 @@ public class UserServiceImpl implements IUserService {
 	@Autowired
 	private Environment environment;
 
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+
 	/**
 	 * Pupose:Register the user
 	 * 
@@ -70,12 +77,11 @@ public class UserServiceImpl implements IUserService {
 		}
 		user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 		String token = tokenUtil.createToken(regDTO.getEmailId());
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom("pratikshatamadalge@gmail.com");
-		message.setTo(regDTO.getEmailId());
-		message.setSubject("varify user");
-		message.setText("Varification token: " + token);
-		javaMailSender.send(message);
+		MailData maildata = new MailData();
+		maildata.setEmailId(regDTO.getEmailId());
+		maildata.setToken(token);
+		maildata.setMailMessage("Varification mail");
+		rabbitTemplate.convertAndSend("key", maildata);
 		userRepository.save(user);
 		return new Response(HttpStatus.OK, environment.getProperty("registerSuccess"), null);
 	}
