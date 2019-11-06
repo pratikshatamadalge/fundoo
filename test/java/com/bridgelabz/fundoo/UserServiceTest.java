@@ -116,6 +116,6 @@ public class UserServiceTest {
 		user.setPassword("87654321");
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		when(userRepository.save(user)).thenReturn(user);
+		assertEquals(user.getEmailId(), user.getPassword());
 	}
-	
 }

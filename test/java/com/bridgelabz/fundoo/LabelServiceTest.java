@@ -34,12 +34,9 @@ public class LabelServiceTest {
 	LabelRepository labelRepository;
 
 	@Mock
-	LabelDTO labelDTO;
-
-	@Mock
 	ModelMapper modelMapper;
 
-	Label label = new Label("5dbc1b1c3f43762b578e7390", "Task", "pratikshatamadalge21@gmail,com", null);
+	Label label = new Label("5dbc1b1c3f43762b578e7390", "Task", "pratikshatamadalge21@gmail.com", null);
 
 	@Before
 	public void Setup() throws Exception {
@@ -50,35 +47,42 @@ public class LabelServiceTest {
 	 * Test case for create label api
 	 */
 	@Test
-	public void createLabelTest() {
-		labelDTO.setLabelName("Junit");
-		// Optional<Label> already = Optional.of(label);
+	public void testCreateLabel() {
+		LabelDTO labelDTO = new LabelDTO();
+		labelDTO.setLabelName("Task");
+		System.out.println("in create label :" + labelDTO.getLabelName());
 		when(modelMapper.map(labelDTO, Label.class)).thenReturn(label);
 		when(labelRepository.save(label)).thenReturn(label);
+		assertEquals(labelDTO.getLabelName(), label.getLabelName());
 	}
 
 	/**
 	 * Test case for update label api
 	 */
 	@Test
-	public void updateLabelTest() {
-		// Optional<Label> already = Optional.of(label);
+	public void testUpdateLabel() {
+		List<Label> label1 = null;
+		String emailId = "pratikshatamadalge21@gmail.com";
+		String labelName = "7 wonders in world....";
+
+		when(labelRepository.findByEmailId(emailId)).thenReturn(label1);
 		label.setLabelName("7 wonders in world....");
 		when(labelRepository.save(label)).thenReturn(label);
+		assertEquals(label.getLabelName(), labelName);
 	}
 
 	/**
 	 * Test case for delete label api
 	 */
 	@Test
-	public void deleteLabelTest() {
+	public void testDeleteLabel() {
 
 		List<Label> label1 = null;
 		String labelId = "5dba69b03f43761e31622cbe";
 		String emailId = "pratikshatamadalge21@gmail.com";
-		// Optional<Label> already = Optional.of(label);
 		when(labelRepository.findByEmailId(emailId)).thenReturn(label1);
 		labelRepository.deleteById(labelId);
+		assertEquals(label.getEmailId(), emailId);
 
 	}
 
@@ -86,7 +90,7 @@ public class LabelServiceTest {
 	 * Test case to fetch all label api
 	 */
 	@Test
-	public void getLabelTest() {
+	public void testGetLabel() {
 		List<Label> label1 = null;
 		String emailId = "pratikshatamadalge21@gmail.com";
 		Optional<Label> already = Optional.of(label);

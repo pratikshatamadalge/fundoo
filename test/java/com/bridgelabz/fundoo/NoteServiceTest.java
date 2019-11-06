@@ -12,11 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.controller.NoteController;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.model.Note;
@@ -38,13 +39,13 @@ public class NoteServiceTest {
 	@Mock
 	NoteRepository noteRepository;
 
-	@Mock
-	NoteDTO noteDTO;
+//	@Mock
+//	NoteDTO noteDTO;
 
 	@Mock
 	ModelMapper modelMapper;
 
-	Note note = new Note("7 wonders in world", "taj mahal", null, null, null, null, null, null, null, null, null, null,
+	Note note = new Note("1", "7 wonders in world", "taj mahal", null, null, null, null, null, null, null, null, null,
 			null);
 
 	@Before
@@ -59,20 +60,30 @@ public class NoteServiceTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void createNoteTest() throws Exception {
-		noteDTO.setDescription("7 wonders in world");
-		noteDTO.setTitle("naygara falls");
-		Optional<Note> already = Optional.of(note);
+	public void testCreateNote() throws Exception {
+
+		NoteDTO noteDTO = new NoteDTO();
+
+		noteDTO.setTitle("title");
+		noteDTO.setDescription("description");
+		System.out.println("in test create note:" + noteDTO.getTitle() + " " + " " + noteDTO.getDescription());
+		String email = "user@gmail.com";
+
+		// Definition of mock object
 		when(modelMapper.map(noteDTO, Note.class)).thenReturn(note);
 		when(noteRepository.save(note)).thenReturn(note);
-		assertEquals(noteDTO.getTitle(), already.get().getEmailId());
+
+		Response response = noteService.createNote(noteDTO, email);
+		System.out.println("::::::::::::::::::testCreateNote Response:::::::::\n" + response + "\n\n\n\n");
+		assertEquals(HttpStatus.OK, noteService.createNote(noteDTO, email).getStatusCode());
 	}
 
 	/**
 	 * Test case for update note api
 	 */
 	@Test
-	public void updateNoteTest() {
+	public void testUpdateNote() {
+		NoteDTO noteDTO = new NoteDTO();
 		Optional<Note> already = Optional.of(note);
 		note.setTitle("7 wonders in world....");
 		note.setTitle("taj mahal");
@@ -84,7 +95,7 @@ public class NoteServiceTest {
 	 * Test case for delete note api
 	 */
 	@Test
-	public void deleteNoteTest() {
+	public void testDeleteNote() {
 		String noteId = "5dba69b03f43761e31622cbe";
 		String emailId = "pratikshatamadalge21@gmail.com";
 		Optional<Note> already = Optional.of(note);
@@ -97,7 +108,7 @@ public class NoteServiceTest {
 	 * Test case to fetch all note
 	 */
 	@Test
-	public void getAllNoteTest() {
+	public void testGetAllNote() {
 		List<Note> note1 = null;
 		String emailId = "pratikshatamadalge21@gmail.com";
 		Optional<Note> already = Optional.of(note);
@@ -109,7 +120,7 @@ public class NoteServiceTest {
 	 * Test case for isPinned api
 	 */
 	@Test
-	public void isPinnedTest() {
+	public void TestisPinned() {
 		String noteId = "5dba69b03f43761e31622cbe";
 		String emailId = "shelkeva@gmail.com";
 		note.setIsPinned(false);
@@ -124,7 +135,7 @@ public class NoteServiceTest {
 	 * Test case for isTrashed api
 	 */
 	@Test
-	public void isTrashedTest() {
+	public void testIsTrashed() {
 		String noteId = "5dba69b03f43761e31622cbe";
 		String emailId = "shelkeva@gmail.com";
 		note.setIsTrashed(false);
@@ -139,7 +150,7 @@ public class NoteServiceTest {
 	 * Test case for isArchieved api
 	 */
 	@Test
-	public void isArchievedTest() {
+	public void testIsArchieved() {
 		String noteId = "5dba69b03f43761e31622cbe";
 		String emailId = "shelkeva@gmail.com";
 		note.setIsArcheived(false);

@@ -69,7 +69,7 @@ public class NoteServiceImpl implements NoteService {
 		note.setIsArcheived(false);
 		note.setIsTrashed(false);
 		noteRepository.save(note);
-		return new Response(HttpStatus.OK, environment.getProperty("success"), null);
+		return new Response(HttpStatus.OK, StaticReference.SUCCESSFULL, null);
 	}
 
 	/**
