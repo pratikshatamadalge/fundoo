@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -24,8 +25,6 @@ import com.bridgelabz.fundoo.note.repository.LabelRepository;
 import com.bridgelabz.fundoo.note.repository.NoteRepository;
 import com.bridgelabz.fundoo.note.util.ENUM;
 import com.bridgelabz.fundoo.utility.StaticReference;
-
-import lombok.extern.java.Log;
 
 /**
  * Purpose:To implement all the service for the note controller
@@ -84,9 +83,8 @@ public class NoteServiceImpl implements NoteService {
 	public Response updateNote(String noteId, NoteDTO noteDTO, String emailId) {
 		LOG.info(StaticReference.SERVICE_UPDATE_NOTE);
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
-		if (note == null) {
+		if (note == null)
 			throw new NoteServiceException(StaticReference.NOTEXIST);
-		}
 		if (noteDTO.getTitle() != null && noteDTO.getDescription() != null) {
 			note.setTitle(noteDTO.getTitle());
 			note.setDescription(noteDTO.getDescription());
@@ -126,12 +124,12 @@ public class NoteServiceImpl implements NoteService {
 	 * 
 	 * @return
 	 */
+	@Cacheable(value = "notes", key = "#emailId")
 	@Override
 	public List<Note> getAllNote(String emailId) {
 		LOG.info(StaticReference.SERVICE_GET_NOTE);
-		List<Note> note = noteRepository.findByEmailId(emailId);
+		return noteRepository.findByEmailId(emailId);
 
-		return note;
 	}
 
 	/**

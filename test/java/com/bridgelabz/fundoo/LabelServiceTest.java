@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -14,9 +13,6 @@ import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import com.bridgelabz.fundoo.note.dto.LabelDTO;
 import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
@@ -25,7 +21,6 @@ import com.bridgelabz.fundoo.note.service.LabelImpl;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class LabelServiceTest {
-	private MockMvc mockmvc;
 
 	@InjectMocks
 	LabelImpl labelImpl;
@@ -37,11 +32,6 @@ public class LabelServiceTest {
 	ModelMapper modelMapper;
 
 	Label label = new Label("5dbc1b1c3f43762b578e7390", "Task", "pratikshatamadalge21@gmail.com", null);
-
-	@Before
-	public void Setup() throws Exception {
-		mockmvc = MockMvcBuilders.standaloneSetup(labelImpl).build();
-	}
 
 	/**
 	 * Test case for create label api

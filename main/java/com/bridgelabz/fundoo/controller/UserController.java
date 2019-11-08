@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -98,6 +99,7 @@ public class UserController {
 	 * @param newEmail
 	 * @return Response( http status,error code,data )
 	 */
+	@CachePut(value = "users", key = "#user.emailId")
 	@PutMapping("/update")
 	public ResponseEntity<Response> updateUser(@RequestParam String oldEmail, @RequestParam String newEmail) {
 		LOG.info(StaticReference.CONTROLLER_UPDATE_USER);

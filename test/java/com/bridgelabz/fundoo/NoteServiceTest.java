@@ -5,7 +5,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -14,8 +13,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.controller.NoteController;
@@ -28,8 +25,6 @@ import com.bridgelabz.fundoo.note.service.NoteServiceImpl;
 @SpringBootTest
 public class NoteServiceTest {
 
-	private MockMvc mockmvc;
-
 	@InjectMocks
 	NoteServiceImpl noteService;
 
@@ -39,19 +34,11 @@ public class NoteServiceTest {
 	@Mock
 	NoteRepository noteRepository;
 
-//	@Mock
-//	NoteDTO noteDTO;
-
 	@Mock
 	ModelMapper modelMapper;
 
 	Note note = new Note("1", "7 wonders in world", "taj mahal", null, null, null, null, null, null, null, null, null,
 			null);
-
-	@Before
-	public void Setup() throws Exception {
-		mockmvc = MockMvcBuilders.standaloneSetup(noteService).build();
-	}
 
 	/**
 	 * 
@@ -129,6 +116,7 @@ public class NoteServiceTest {
 			note.setIsPinned(false);
 		else
 			note.setIsPinned(true);
+		assertEquals(true, note.getIsPinned());
 	}
 
 	/**
@@ -143,7 +131,8 @@ public class NoteServiceTest {
 		if (note.getIsTrashed())
 			note.setIsTrashed(false);
 		else
-			note.setIsTrashed(false);
+			note.setIsTrashed(true);
+		assertEquals(true, note.getIsTrashed());
 	}
 
 	/**
@@ -158,6 +147,7 @@ public class NoteServiceTest {
 		if (note.getIsArcheived())
 			note.setIsArcheived(false);
 		else
-			note.setIsArcheived(false);
+			note.setIsArcheived(true);
+		assertEquals(true, note.getIsArcheived());
 	}
 }
