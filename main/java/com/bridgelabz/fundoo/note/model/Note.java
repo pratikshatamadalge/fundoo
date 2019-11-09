@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoo.note.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,11 +14,15 @@ import com.bridgelabz.fundoo.note.util.ENUM;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
-public class Note {
+public class Note implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	@Id
 	private String id;
 	private String title;
@@ -33,8 +38,4 @@ public class Note {
 	private ENUM repeat;
 	@DBRef(lazy = true)
 	private List<Label> labels = new ArrayList<>();
-	
-	public Note() {
-		
-	}
 }

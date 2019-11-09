@@ -32,6 +32,7 @@ import com.bridgelabz.fundoo.utility.StaticReference;
  * @author Pratiksha Tamadalge
  *
  */
+@Cacheable
 @Service
 @PropertySource("classpath:message.properties")
 public class NoteServiceImpl implements NoteService {
@@ -198,10 +199,7 @@ public class NoteServiceImpl implements NoteService {
 		LOG.info(StaticReference.SERVICE_ADD_LABEL);
 		Note note = noteRepository.findByIdAndEmailId(noteId, emailId);
 		Label label = labelRepository.findById(labelId).get();
-		if (note == null) {
-			return new Response(HttpStatus.BAD_REQUEST, StaticReference.NOTEXIST, null);
-		}
-		if (label == null) {
+		if (note == null || label == null) {
 			return new Response(HttpStatus.BAD_REQUEST, StaticReference.NOTEXIST, null);
 		}
 		note.getLabels().add(label);
@@ -209,7 +207,6 @@ public class NoteServiceImpl implements NoteService {
 		labelRepository.save(label);
 		noteRepository.save(note);
 		return new Response(HttpStatus.OK, environment.getProperty("update"), null);
-
 	}
 
 	/**

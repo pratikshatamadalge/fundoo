@@ -1,5 +1,7 @@
 package com.bridgelabz.fundoo.model;
 
+import java.io.Serializable;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -13,8 +15,12 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @ResponseStatus
-public class Response {
+public class Response implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private HttpStatus statusCode;
 	private String message;
 	private Object data;
