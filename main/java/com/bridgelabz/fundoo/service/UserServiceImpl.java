@@ -76,6 +76,7 @@ public class UserServiceImpl implements IUserService {
 			throw new RegistrationException(StaticReference.EXIST);
 		}
 		user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+		user.setRegisteredDate(new Date());
 		String token = tokenUtil.createToken(regDTO.getEmailId());
 		MailData maildata = new MailData();
 		maildata.setEmailId(regDTO.getEmailId());
@@ -161,14 +162,13 @@ public class UserServiceImpl implements IUserService {
 			message.setFrom("pratikshatamadalge@gmail.com");
 			message.setTo(emailId);
 			message.setSubject("Reset password Varification");
-			message.setText("Varification token: " + token);
+			message.setText("Verification token: " + token);
 
 			javaMailSender.send(message);
 
 			return new Response(HttpStatus.OK, environment.getProperty("sent"), null);
 		}
 		return new Response(HttpStatus.BAD_REQUEST, StaticReference.NOTEXIST, null);
-
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class UserServiceImpl implements IUserService {
 		if (Boolean.TRUE.equals(flag)) {
 			User user = userRepository.findByEmailId(emailId);
 			user.setIsActive(true);
-			user.setRegisteredDate(new Date());
+
 			userRepository.save(user);
 			return new Response(HttpStatus.OK, environment.getProperty("validate"), null);
 		}

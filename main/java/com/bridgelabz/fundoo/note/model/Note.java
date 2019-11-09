@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.bridgelabz.fundoo.note.util.ENUM;
+import com.bridgelabz.label.model.Label;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

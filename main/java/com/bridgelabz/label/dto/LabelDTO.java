@@ -1,4 +1,4 @@
-package com.bridgelabz.fundoo.note.dto;
+package com.bridgelabz.label.dto;
 
 import lombok.Data;
 

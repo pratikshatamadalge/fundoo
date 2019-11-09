@@ -1,10 +1,10 @@
-package com.bridgelabz.fundoo.note.service;
+package com.bridgelabz.label.service;
 
 import java.util.List;
 
 import com.bridgelabz.fundoo.model.Response;
-import com.bridgelabz.fundoo.note.dto.LabelDTO;
-import com.bridgelabz.fundoo.note.model.Label;
+import com.bridgelabz.label.dto.LabelDTO;
+import com.bridgelabz.label.model.Label;
 
 /**
  * Purpose:Label service interface to for label service implementation

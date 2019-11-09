@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -18,13 +17,12 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.exception.NoteServiceException;
-
-import com.bridgelabz.fundoo.note.model.Label;
 import com.bridgelabz.fundoo.note.model.Note;
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
 import com.bridgelabz.fundoo.note.repository.NoteRepository;
 import com.bridgelabz.fundoo.note.util.ENUM;
 import com.bridgelabz.fundoo.utility.StaticReference;
+import com.bridgelabz.label.model.Label;
 
 /**
  * Purpose:To implement all the service for the note controller
@@ -32,7 +30,7 @@ import com.bridgelabz.fundoo.utility.StaticReference;
  * @author Pratiksha Tamadalge
  *
  */
-@Cacheable
+//@Cacheable
 @Service
 @PropertySource("classpath:message.properties")
 public class NoteServiceImpl implements NoteService {
@@ -125,7 +123,7 @@ public class NoteServiceImpl implements NoteService {
 	 * 
 	 * @return
 	 */
-	@Cacheable(value = "notes", key = "#emailId")
+//	@Cacheable(value = "notes", key = "#emailId")
 	@Override
 	public List<Note> getAllNote(String emailId) {
 		LOG.info(StaticReference.SERVICE_GET_NOTE);
@@ -280,7 +278,7 @@ public class NoteServiceImpl implements NoteService {
 			note.setRemainder(dateTime);
 			note.setRepeat(repeat);
 			noteRepository.save(note);
-			return new Response(HttpStatus.OK, "Remainder", null);
+			return new Response(HttpStatus.OK, StaticReference.SUCCESSFULL, null);
 		}
 		return new Response(HttpStatus.BAD_REQUEST, "Failed to add remainder date time expired", null);
 	}
@@ -318,6 +316,7 @@ public class NoteServiceImpl implements NoteService {
 		if (note == null)
 			throw new NoteServiceException(environment.getProperty("notExist"));
 		note.setRemainder(null);
+		note.setRepeat(null);
 		noteRepository.save(note);
 		return new Response(HttpStatus.OK, StaticReference.DELETE, null);
 	}

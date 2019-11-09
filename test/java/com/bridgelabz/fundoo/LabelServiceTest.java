@@ -13,10 +13,11 @@ import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import com.bridgelabz.fundoo.note.dto.LabelDTO;
-import com.bridgelabz.fundoo.note.model.Label;
+
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
-import com.bridgelabz.fundoo.note.service.LabelImpl;
+import com.bridgelabz.label.dto.LabelDTO;
+import com.bridgelabz.label.model.Label;
+import com.bridgelabz.label.service.LabelImpl;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
