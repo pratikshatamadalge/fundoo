@@ -13,7 +13,6 @@ import javax.security.auth.login.LoginException;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
@@ -33,7 +32,6 @@ import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.model.User;
 
 import com.bridgelabz.fundoo.repository.IUserRepository;
-import com.bridgelabz.fundoo.utility.EmailSender;
 import com.bridgelabz.fundoo.utility.StaticReference;
 import com.bridgelabz.fundoo.utility.TokenUtil;
 
