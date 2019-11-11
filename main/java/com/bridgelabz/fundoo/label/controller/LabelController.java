@@ -1,4 +1,4 @@
-package com.bridgelabz.label.controller;
+package com.bridgelabz.fundoo.label.controller;
 
 import java.util.List;
 
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bridgelabz.fundoo.label.dto.LabelDTO;
+import com.bridgelabz.fundoo.label.model.Label;
+import com.bridgelabz.fundoo.label.service.LabelService;
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.utility.StaticReference;
 import com.bridgelabz.fundoo.utility.TokenUtil;
-import com.bridgelabz.label.dto.LabelDTO;
-import com.bridgelabz.label.model.Label;
-import com.bridgelabz.label.service.LabelService;
 
 /**
  * Purpose:Label controller To do CRUD operations

@@ -1,4 +1,4 @@
-package com.bridgelabz.label.model;
+package com.bridgelabz.fundoo.label.model;
 
 import java.util.ArrayList;
 import java.util.List;

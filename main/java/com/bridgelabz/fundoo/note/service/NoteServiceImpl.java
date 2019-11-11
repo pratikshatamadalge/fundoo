@@ -14,6 +14,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.fundoo.label.model.Label;
 import com.bridgelabz.fundoo.model.Response;
 import com.bridgelabz.fundoo.note.dto.NoteDTO;
 import com.bridgelabz.fundoo.note.exception.NoteServiceException;
@@ -22,7 +23,6 @@ import com.bridgelabz.fundoo.note.repository.LabelRepository;
 import com.bridgelabz.fundoo.note.repository.NoteRepository;
 import com.bridgelabz.fundoo.note.util.ENUM;
 import com.bridgelabz.fundoo.utility.StaticReference;
-import com.bridgelabz.label.model.Label;
 
 /**
  * Purpose:To implement all the service for the note controller

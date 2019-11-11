@@ -14,10 +14,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.bridgelabz.fundoo.label.dto.LabelDTO;
+import com.bridgelabz.fundoo.label.model.Label;
+import com.bridgelabz.fundoo.label.service.LabelImpl;
 import com.bridgelabz.fundoo.note.repository.LabelRepository;
-import com.bridgelabz.label.dto.LabelDTO;
-import com.bridgelabz.label.model.Label;
-import com.bridgelabz.label.service.LabelImpl;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
