@@ -17,7 +17,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-            <spring.boot.mainclass>com.detaysoft.Application</spring.boot.mainclass>
+            <spring.boot.mainclass>com.bridgelabz.fundoo</spring.boot.mainclass>
 	</properties>
 
 	<dependencies>
