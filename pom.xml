@@ -17,7 +17,6 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-            <spring.boot.mainclass>com.bridgelabz.fundoo</spring.boot.mainclass>
 	</properties>
 
 	<dependencies>
@@ -102,13 +101,7 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.tngtech.java/junit-dataprovider -->
-		<dependency>
-			<groupId>com.tngtech.java</groupId>
-			<artifactId>junit-dataprovider</artifactId>
-			<version>1.9.3</version>
-			<scope>test</scope>
-		</dependency>
-
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
@@ -142,14 +135,24 @@
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+<dependency>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.6.1</version>
+</dependency>
+		
 	</dependencies>
 
 	<build>
 		<plugins>
-			<plugin>
+		<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
+			
 		</plugins>
 	</build>
 </project>
