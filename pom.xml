@@ -14,6 +14,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>FundooMongo</name>
+	<start-class>com.bridgelabz.fundoo</start-class>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -101,7 +102,8 @@
 			<artifactId>lombok</artifactId>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.tngtech.java/junit-dataprovider -->
+		<!-- https://mvnrepository.com/artifact/com.tngtech.java/junit-da
+taprovider -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
