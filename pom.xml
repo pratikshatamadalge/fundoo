@@ -12,6 +12,7 @@
 	<groupId>com.bridgelabz</groupId>
 	<artifactId>FundooMongo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>FundooMongo</name>
 	<description>Demo project for Spring Boot</description>
 
