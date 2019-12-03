@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 /**
  * @author Pratiksha Tamadalge
- *
  */
 @EnableCaching
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
