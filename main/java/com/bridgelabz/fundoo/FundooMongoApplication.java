@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 /**
  * @author Pratiksha Tamadalge
  *
@@ -16,7 +16,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @ComponentScan(basePackages = { "com.bridgelabz.fundoo", "com.bridgelabz.fundoo.note" })
 @EnableMongoRepositories({ "com.bridgelabz.fundoo.note.repository", "com.bridgelabz.fundoo.repository" })
-public class FundooMongoApplication {
+public class FundooMongoApplication extends SpringBootServletInitializer{
 	public static void main(String[] args) {
 		SpringApplication.run(FundooMongoApplication.class, args);
 	}
