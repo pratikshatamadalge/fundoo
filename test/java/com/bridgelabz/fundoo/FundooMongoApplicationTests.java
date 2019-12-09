@@ -44,6 +44,7 @@ public class FundooMongoApplicationTests {
 		// recieved from the server
 		String responseBody = response.getBody().asString();
 		System.out.println("Response Body is =>  " + responseBody);
+		Assert.assertEquals(200,response.getStatusCode());
 	}
 
 	@Test
@@ -245,6 +246,7 @@ public class FundooMongoApplicationTests {
 		String responseBody = response.getBody().asString();
 		System.out.println("Response Body is =>" + responseBody);
 		response.then().log().all().statusCode(200);
+		Assert.assertEquals(200,response.getStatusCode());
 	}
 
 	@Test
