@@ -125,7 +125,7 @@ taprovider -->
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.6.1</version>
+			<version>2.10.0</version>
 			<scope>compile</scope>
 		</dependency>
 
